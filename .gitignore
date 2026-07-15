@@ -7,3 +7,21 @@ __pycache__/
 
 vector_store/faiss_index/*
 !vector_store/faiss_index/
+
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+
+# Large datasets
+data/raw/wikipedia_dataset/
+
+# Processed data
+processed/
+
+# Vector database
+vector_store/
+
+# Streamlit cache
+.streamlit/
