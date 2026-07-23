@@ -1,27 +1,56 @@
-venv/
+# =========================
+# Python
+# =========================
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
 .env
+
+# IDE
 .vscode/
 .idea/
 
-vector_store/faiss_index/*
-!vector_store/faiss_index/
+# =========================
+# Data
+# =========================
 
-# Virtual environment
-venv/
+# Uploaded documents
+data/uploads/
 
-# Python cache
-__pycache__/
-
-# Large datasets
-data/raw/wikipedia_dataset/
-
-# Processed data
-processed/
+# Processed files
+data/processed/
 
 # Vector database
-vector_store/
+data/vector_store/
 
-# Streamlit cache
-.streamlit/
+# Default dataset (can be several GBs)
+data/default_dataset/
+
+# Models
+models/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+
+# Environment files
+.env.*
