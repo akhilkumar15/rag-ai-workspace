@@ -1,0 +1,3 @@
+This is a sample document.
+Welcome to the RAG AI Workspace.
+We are testing the Data Loader module.

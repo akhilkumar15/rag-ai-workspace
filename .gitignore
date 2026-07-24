@@ -5,12 +5,20 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+*$py.class
 
+# =========================
 # Virtual Environment
+# =========================
 venv/
+.venv/
+env/
 .env
+.env.*
 
+# =========================
 # IDE
+# =========================
 .vscode/
 .idea/
 
@@ -24,33 +32,37 @@ data/uploads/
 # Processed files
 data/processed/
 
-# Vector database
-data/vector_store/
-
-# Default dataset (can be several GBs)
+# Large datasets
 data/default_dataset/
+
+# Generated vector database
+vector_store/
+data/vector_store/
 
 # Models
 models/
 
-# Logs
+# =========================
+# Logs & Temp
+# =========================
 *.log
-
-# Temporary files
 *.tmp
 *.temp
 
-# OS files
-.DS_Store
-Thumbs.db
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Python packaging
+# =========================
+# Build
+# =========================
 build/
 dist/
 *.egg-info/
 
-# Environment files
-.env.*
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
