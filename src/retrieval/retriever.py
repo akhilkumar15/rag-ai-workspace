@@ -12,7 +12,10 @@ from typing import Dict, List
 
 import numpy as np
 
-from config import TOP_K_RESULTS
+from config import (
+    MIN_SIMILARITY_SCORE,
+    TOP_K_RESULTS,
+)
 from src.embeddings.embedding_generator import EmbeddingGenerator
 from src.embeddings.vector_database import VectorDatabase
 
@@ -66,7 +69,14 @@ class Retriever:
         if self.vector_db.index is None:
             raise RuntimeError("Vector database has not been loaded.")
 
-        query_embedding = self.embedding_generator.generate_embedding(query)
+        top_k = min(
+            top_k,
+            self.vector_db.total_vectors(),
+        )
+
+        query_embedding = self.embedding_generator.generate_embedding(
+            query
+        )
 
         query_vector = np.array(
             [query_embedding],
@@ -79,20 +89,36 @@ class Retriever:
         )
 
         results: List[Dict] = []
+        seen_chunk_ids = set()
 
         for score, idx in zip(distances[0], indices[0]):
 
             if idx == -1:
                 continue
 
+            if score < MIN_SIMILARITY_SCORE:
+                continue
+
             chunk = self.vector_db.metadata[idx].copy()
+
+            chunk_id = chunk["chunk_id"]
+
+            if chunk_id in seen_chunk_ids:
+                continue
+
+            seen_chunk_ids.add(chunk_id)
 
             chunk["score"] = float(score)
 
             results.append(chunk)
 
+        results.sort(
+            key=lambda chunk: chunk["score"],
+            reverse=True,
+        )
+
         logger.info(
-            "Retrieved %d chunk(s) for query: %s",
+            "Retrieved %d chunk(s) for query '%s'.",
             len(results),
             query,
         )

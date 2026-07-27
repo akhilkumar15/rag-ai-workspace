@@ -1,56 +1,166 @@
 """
 Candidate Extractor Module
 
-Processes retrieved chunks into structured candidate contexts
-for downstream modules like Predictor, QA Engine,
-Summarizer, and Comparator.
+Extracts candidate next words from retrieved chunks for
+the RAG-based Word Prediction pipeline.
 """
 
-from typing import List, Dict
+from __future__ import annotations
+
+import re
+from collections import defaultdict
+from typing import Dict, List
 
 
 class CandidateExtractor:
     """
-    Extracts and prepares candidate contexts from retrieved chunks.
+    Extract candidate next words from retrieved chunks.
     """
 
-    def __init__(self) -> None:
-        pass
+    WORD_PATTERN = re.compile(r"[A-Za-z]+(?:-[A-Za-z]+)?")
+
+    STOP_WORDS = {
+        "a",
+        "an",
+        "the",
+        "is",
+        "are",
+        "am",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "of",
+        "to",
+        "in",
+        "on",
+        "at",
+        "by",
+        "for",
+        "from",
+        "with",
+        "into",
+        "onto",
+        "over",
+        "under",
+        "and",
+        "or",
+        "but",
+        "that",
+        "this",
+        "these",
+        "those",
+        "which",
+        "who",
+        "whose",
+        "where",
+        "when",
+        "while",
+        "it",
+        "its",
+        "their",
+        "his",
+        "her",
+        "our",
+        "your",
+    }
 
     def extract(
         self,
-        retrieved_chunks: List[Dict]
+        query: str,
+        retrieved_chunks: List[Dict],
     ) -> List[Dict]:
         """
-        Prepare retrieved chunks for downstream processing.
+        Extract candidate next words.
 
         Parameters
         ----------
+        query : str
+            User input phrase.
+
         retrieved_chunks : List[Dict]
             Output from Retriever.
 
         Returns
         -------
         List[Dict]
-            Candidate contexts.
+            Candidate words with metadata.
         """
 
-        candidates = []
+        if not query.strip():
+            return []
 
-        for rank, chunk in enumerate(retrieved_chunks, start=1):
+        escaped_query = re.escape(query.strip())
 
-            candidate = {
-                "rank": rank,
-                "score": chunk["score"],
-                "file_name": chunk["file_name"],
-                "file_path": chunk["file_path"],
-                "chunk_id": chunk["chunk_id"],
-                "start_token": chunk["start_token"],
-                "end_token": chunk["end_token"],
-                "token_count": chunk["token_count"],
-                "text": chunk["text"],
+        pattern = re.compile(
+            rf"{escaped_query}\s+([A-Za-z]+(?:-[A-Za-z]+)?)",
+            re.IGNORECASE,
+        )
+
+        candidate_map = defaultdict(
+            lambda: {
+                "word": "",
+                "frequency": 0,
+                "best_score": 0.0,
+                "sources": [],
             }
+        )
 
-            candidates.append(candidate)
+        for chunk in retrieved_chunks:
+
+            text = chunk.get("text", "")
+
+            matches = pattern.findall(text)
+
+            for match in matches:
+
+                word_match = self.WORD_PATTERN.search(match)
+
+                if not word_match:
+                    continue
+
+                word = word_match.group(0).lower()
+
+                # Ignore numbers
+                if word.isdigit():
+                    continue
+
+                # Ignore very short words
+                if len(word) < 3:
+                    continue
+
+                # Ignore stop words
+                if word in self.STOP_WORDS:
+                    continue
+
+                candidate = candidate_map[word]
+
+                candidate["word"] = word
+                candidate["frequency"] += 1
+
+                candidate["best_score"] = max(
+                    candidate["best_score"],
+                    chunk["score"],
+                )
+
+                candidate["sources"].append(
+                    {
+                        "file_name": chunk["file_name"],
+                        "file_path": chunk["file_path"],
+                        "chunk_id": chunk["chunk_id"],
+                        "score": chunk["score"],
+                    }
+                )
+
+        candidates = list(candidate_map.values())
+
+        candidates.sort(
+            key=lambda candidate: (
+                -candidate["frequency"],
+                -candidate["best_score"],
+                candidate["word"],
+            )
+        )
 
         return candidates

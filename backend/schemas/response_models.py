@@ -12,10 +12,26 @@ class SourceModel(BaseModel):
     score: float
 
 
+# ---------------------------------------------------------
+# Word Prediction Models
+# ---------------------------------------------------------
+
+class PredictionModel(BaseModel):
+    word: str
+    score: float
+    frequency: int
+    rank: int
+
+
 class WordPredictionResponse(BaseModel):
     query: str
-    predictions: List[str]
+    predictions: List[PredictionModel]
+    count: int
 
+
+# ---------------------------------------------------------
+# QA Models
+# ---------------------------------------------------------
 
 class QAResponse(BaseModel):
     query: str
@@ -24,6 +40,10 @@ class QAResponse(BaseModel):
     retrieved_chunks: int
 
 
+# ---------------------------------------------------------
+# Summary Models
+# ---------------------------------------------------------
+
 class SummaryResponse(BaseModel):
     query: str
     response: str
@@ -31,9 +51,17 @@ class SummaryResponse(BaseModel):
     retrieved_chunks: int
 
 
+# ---------------------------------------------------------
+# Comparison Models
+# ---------------------------------------------------------
+
 class ComparisonResponse(BaseModel):
     response: str
 
+
+# ---------------------------------------------------------
+# Health Models
+# ---------------------------------------------------------
 
 class HealthResponse(BaseModel):
     status: str

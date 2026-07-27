@@ -69,7 +69,14 @@ OLLAMA_HOST = "http://localhost:11434"
 # Retrieval Configuration
 # =============================================================================
 
+# Number of document chunks retrieved from FAISS
 TOP_K_RESULTS: int = 5
+
+# Minimum cosine similarity score required
+# for a retrieved chunk to be considered.
+MIN_SIMILARITY_SCORE: float = 0.30
+
+# Vector database implementation
 VECTOR_DB_TYPE: str = "faiss"
 
 # =============================================================================

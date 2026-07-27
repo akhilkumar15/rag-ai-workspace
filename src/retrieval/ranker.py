@@ -1,19 +1,22 @@
 """
 Ranker Module
 
-Ranks retrieved candidate contexts based on relevance score.
+Ranks candidate words using frequency and retrieval similarity.
 """
 
-from typing import List, Dict
+from __future__ import annotations
+
+from typing import Dict, List
 
 
 class Ranker:
     """
-    Ranks candidate contexts.
+    Rank candidate next words.
     """
 
-    def __init__(self) -> None:
-        pass
+    # Weight configuration
+    SIMILARITY_WEIGHT = 0.70
+    FREQUENCY_WEIGHT = 0.30
 
     def rank(
         self,
@@ -21,15 +24,15 @@ class Ranker:
         top_k: int | None = None,
     ) -> List[Dict]:
         """
-        Rank candidates by similarity score.
+        Rank candidate words.
 
         Parameters
         ----------
         candidates : List[Dict]
-            Candidate contexts.
+            Candidate words produced by CandidateExtractor.
 
         top_k : int | None
-            Limit number of returned candidates.
+            Number of candidates to return.
 
         Returns
         -------
@@ -37,14 +40,57 @@ class Ranker:
             Ranked candidates.
         """
 
+        if not candidates:
+            return []
+
+        max_frequency = max(
+            candidate["frequency"]
+            for candidate in candidates
+        )
+
+        for candidate in candidates:
+
+            frequency_score = (
+                candidate["frequency"] / max_frequency
+                if max_frequency > 0
+                else 0.0
+            )
+
+            similarity_score = candidate["best_score"]
+
+            final_score = (
+                self.SIMILARITY_WEIGHT * similarity_score
+                + self.FREQUENCY_WEIGHT * frequency_score
+            )
+
+            candidate["frequency_score"] = round(
+                frequency_score,
+                4,
+            )
+
+            candidate["similarity_score"] = round(
+                similarity_score,
+                4,
+            )
+
+            candidate["final_score"] = round(
+                final_score,
+                4,
+            )
+
         ranked = sorted(
             candidates,
-            key=lambda x: x["score"],
+            key=lambda candidate: (
+                candidate["final_score"],
+                candidate["similarity_score"],
+                candidate["frequency"],
+                candidate["word"],
+            ),
             reverse=True,
         )
 
-        for index, candidate in enumerate(ranked, start=1):
-            candidate["rank"] = index
+        for rank, candidate in enumerate(ranked, start=1):
+            candidate["rank"] = rank
 
         if top_k is not None:
             ranked = ranked[:top_k]

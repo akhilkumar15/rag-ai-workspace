@@ -7,10 +7,11 @@ Future:
 - RegexPredictor
 - WeightedPredictor
 - HybridPredictor
+- TransformerPredictor
 """
 
-from src.prediction.regex_predictor import RegexPredictor
 from src.prediction.base_predictor import BasePredictor
+from src.prediction.regex_predictor import RegexPredictor
 
 
 class PredictorFactory:
@@ -18,16 +19,23 @@ class PredictorFactory:
     Factory class for prediction strategies.
     """
 
-    @staticmethod
+    PREDICTORS = {
+        "regex": RegexPredictor,
+    }
+
+    @classmethod
     def get_predictor(
+        cls,
         predictor_type: str = "regex",
     ) -> BasePredictor:
 
         predictor_type = predictor_type.lower()
 
-        if predictor_type == "regex":
-            return RegexPredictor()
+        if predictor_type not in cls.PREDICTORS:
+            raise ValueError(
+                f"Unsupported predictor type: {predictor_type}"
+            )
 
-        raise ValueError(
-            f"Unsupported predictor type: {predictor_type}"
-        )
+        predictor_class = cls.PREDICTORS[predictor_type]
+
+        return predictor_class()

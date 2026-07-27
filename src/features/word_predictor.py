@@ -1,8 +1,10 @@
 """
-Predictor Module
+Word Predictor Module
 
-Provides next-word prediction using the shared RAG pipeline.
+Provides the public interface for next-word prediction.
 """
+
+from __future__ import annotations
 
 from typing import Dict, Optional
 
@@ -12,7 +14,10 @@ from src.pipeline.rag_pipeline import RAGPipeline
 
 class WordPredictor:
     """
-    High-level interface for word prediction.
+    High-level interface for next-word prediction.
+
+    This class acts as the feature layer between the API
+    and the RAG pipeline.
     """
 
     def __init__(
@@ -20,10 +25,12 @@ class WordPredictor:
         pipeline: Optional[RAGPipeline] = None,
     ) -> None:
         """
-        Initialize WordPredictor.
+        Initialize the Word Predictor.
 
-        If a pipeline is provided, it will be reused.
-        Otherwise, create a new pipeline.
+        Parameters
+        ----------
+        pipeline : Optional[RAGPipeline]
+            Custom pipeline instance.
         """
 
         self.pipeline = pipeline or RAGPipeline()
@@ -34,21 +41,28 @@ class WordPredictor:
         top_k: int = TOP_K_RESULTS,
     ) -> Dict:
         """
-        Predict the next words for the user's input.
+        Predict the next words for the given input.
 
         Parameters
         ----------
         user_input : str
-            User query.
+            User input phrase.
 
         top_k : int
-            Number of retrieved chunks.
+            Number of predictions to generate.
 
         Returns
         -------
         Dict
-            Prediction result.
+            Prediction response.
         """
+
+        if not user_input.strip():
+            return {
+                "query": user_input,
+                "predictions": [],
+                "count": 0,
+            }
 
         return self.pipeline.predict(
             user_input=user_input,

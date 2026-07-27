@@ -1,14 +1,12 @@
 """
 Regex Predictor
 
-Version 1 implementation of the word prediction algorithm.
+Version 1 implementation of the prediction strategy.
 
-Uses regular expressions to find the immediate next word
-following the user's query within the retrieved text.
+Consumes ranked candidate words produced by the
+CandidateExtractor and Ranker.
 """
 
-import re
-from collections import Counter
 from typing import Dict, List
 
 from src.prediction.base_predictor import BasePredictor
@@ -16,44 +14,56 @@ from src.prediction.base_predictor import BasePredictor
 
 class RegexPredictor(BasePredictor):
     """
-    Regex-based next word predictor.
+    Regex-based prediction strategy.
+
+    Note:
+    This class no longer performs regex extraction.
+    Regex extraction is handled by CandidateExtractor.
+    This predictor simply formats and returns the
+    highest-ranked candidate words.
     """
 
     def predict(
         self,
         query: str,
-        ranked_chunks: List[Dict],
+        ranked_candidates: List[Dict],
         top_n_words: int = 5,
     ) -> Dict:
+        """
+        Return the highest ranked candidate words.
 
-        counter = Counter()
+        Parameters
+        ----------
+        query : str
+            User query.
 
-        escaped_query = re.escape(query.lower())
+        ranked_candidates : List[Dict]
+            Ranked candidate words.
 
-        pattern = re.compile(
-            rf"{escaped_query}\s+([a-zA-Z][a-zA-Z\-]*)"
-        )
+        top_n_words : int
+            Number of predictions.
 
-        for chunk in ranked_chunks:
-
-            text = chunk["text"].lower()
-
-            matches = pattern.findall(text)
-
-            counter.update(matches)
+        Returns
+        -------
+        Dict
+            Prediction result.
+        """
 
         predictions = []
 
-        for word, frequency in counter.most_common(top_n_words):
+        for candidate in ranked_candidates[:top_n_words]:
 
             predictions.append(
                 {
-                    "word": word,
-                    "frequency": frequency,
+                    "word": candidate["word"],
+                    "frequency": candidate["frequency"],
+                    "score": candidate["final_score"],
+                    "rank": candidate["rank"],
                 }
             )
 
         return {
             "query": query,
             "predictions": predictions,
+            "count": len(predictions),
         }

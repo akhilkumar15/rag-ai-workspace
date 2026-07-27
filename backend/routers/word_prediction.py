@@ -22,26 +22,27 @@ predictor = WordPredictor()
     "",
     response_model=WordPredictionResponse,
 )
-def predict_next_word(request: WordPredictionRequest):
+def predict_next_word(
+    request: WordPredictionRequest,
+) -> WordPredictionResponse:
     """
     Predict the next words for the given input.
     """
 
     try:
+
         result = predictor.predict(
-          user_input=request.text,
+            user_input=request.text,
         )
 
         return WordPredictionResponse(
-          query=result["query"],
-          predictions=[
-            prediction["word"]
-            for prediction in result["predictions"]
-          ],
+            query=result["query"],
+            predictions=result["predictions"],
+            count=result["count"],
         )
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=500,
-            detail=str(e),
+            detail="Internal Server Error",
         )
