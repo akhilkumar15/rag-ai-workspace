@@ -17,18 +17,29 @@ logger = logging.getLogger(__name__)
 class EmbeddingGenerator:
     """
     Generates vector embeddings for text chunks.
+
+    The embedding model is loaded only once and shared across
+    all EmbeddingGenerator instances.
     """
+
+    _shared_model = None
 
     def __init__(
         self,
         model_name: str = EMBEDDING_MODEL_NAME,
     ) -> None:
 
-        logger.info("Loading embedding model: %s", model_name)
+        if EmbeddingGenerator._shared_model is None:
 
-        self.model = SentenceTransformer(model_name)
+            logger.info("Loading embedding model: %s", model_name)
 
-        logger.info("Embedding model loaded successfully.")
+            EmbeddingGenerator._shared_model = SentenceTransformer(
+                model_name
+            )
+
+            logger.info("Embedding model loaded successfully.")
+
+        self.model = EmbeddingGenerator._shared_model
 
     def generate_embedding(
         self,
@@ -49,31 +60,38 @@ class EmbeddingGenerator:
     def generate_embeddings(
         self,
         chunks: List[Dict],
+        batch_size: int = 64,
     ) -> List[Dict]:
         """
-        Generate embeddings for all chunks.
+        Generate embeddings for all chunks using batch processing.
         """
 
-        embedded_chunks = []
+        if not chunks:
+            return []
 
-        total = len(chunks)
+        logger.info(
+            "Generating embeddings for %d chunks (batch size = %d).",
+            len(chunks),
+            batch_size,
+        )
 
-        logger.info("Generating embeddings for %d chunks.", total)
+        texts = [chunk["text"] for chunk in chunks]
 
-        for index, chunk in enumerate(chunks, start=1):
+        embeddings = self.model.encode(
+            texts,
+            batch_size=batch_size,
+            convert_to_numpy=True,
+            normalize_embeddings=True,
+            show_progress_bar=True,
+        )
 
-            logger.info(
-                "Embedding chunk %d/%d",
-                index,
-                total,
-            )
+        embedded_chunks: List[Dict] = []
 
+        for chunk, embedding in zip(chunks, embeddings):
             embedded_chunks.append(
                 {
                     **chunk,
-                    "embedding": self.generate_embedding(
-                        chunk["text"]
-                    ),
+                    "embedding": embedding.tolist(),
                 }
             )
 

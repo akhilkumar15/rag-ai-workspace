@@ -35,6 +35,12 @@ data/processed/
 # Large datasets
 data/default_dataset/
 
+# Wikipedia dataset
+data/raw/wikipedia_dataset/
+data/raw/wikipedia_dataset/1of2/
+data/raw/wikipedia_dataset/2of2/
+data/raw/wikipedia_dataset/AllCombined.txt
+
 # Generated vector database
 vector_store/
 data/vector_store/

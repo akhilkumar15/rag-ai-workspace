@@ -4,7 +4,7 @@ RAG Pipeline
 Central orchestration module for all AI features.
 
 Supported Tasks:
-- Prediction
+- Word Prediction
 - Question Answering
 - Summarization
 - Comparison
@@ -17,6 +17,7 @@ from src.retrieval.retriever import Retriever
 from src.retrieval.candidate_extractor import CandidateExtractor
 from src.retrieval.ranker import Ranker
 from src.retrieval.prompt_builder import PromptBuilder
+from src.prediction.predictor_factory import PredictorFactory
 from src.llm.llm_factory import LLMFactory
 
 
@@ -28,12 +29,15 @@ class RAGPipeline:
         self.extractor = CandidateExtractor()
         self.ranker = Ranker()
         self.prompt_builder = PromptBuilder()
+
+        self.predictor = PredictorFactory.get_predictor()
+
         self.llm = LLMFactory.get_llm()
 
     def _prepare_context(
         self,
         query: str,
-        top_k: int
+        top_k: int,
     ) -> List[Dict]:
 
         retrieved = self.retriever.retrieve(
@@ -47,6 +51,12 @@ class RAGPipeline:
 
         return ranked
 
+    # ------------------------------------------------------------------
+
+    # WORD PREDICTION (No LLM)
+
+    # ------------------------------------------------------------------
+
     def predict(
         self,
         user_input: str,
@@ -58,18 +68,16 @@ class RAGPipeline:
             top_k,
         )
 
-        prompt = self.prompt_builder.build_prediction_prompt(
-            user_input=user_input,
-            candidates=ranked,
+        return self.predictor.predict(
+            query=user_input,
+            ranked_chunks=ranked,
         )
 
-        response = self.llm.generate(prompt)
+    # ------------------------------------------------------------------
 
-        return self._build_response(
-            user_input,
-            response,
-            ranked,
-        )
+    # QUESTION ANSWERING
+
+    # ------------------------------------------------------------------
 
     def answer(
         self,
@@ -95,6 +103,12 @@ class RAGPipeline:
             ranked,
         )
 
+    # ------------------------------------------------------------------
+
+    # SUMMARIZATION
+
+    # ------------------------------------------------------------------
+
     def summarize(
         self,
         query: str,
@@ -118,6 +132,12 @@ class RAGPipeline:
             ranked,
         )
 
+    # ------------------------------------------------------------------
+
+    # COMPARISON
+
+    # ------------------------------------------------------------------
+
     def compare(
         self,
         document_a: str,
@@ -134,6 +154,8 @@ class RAGPipeline:
         return {
             "response": response
         }
+
+    # ------------------------------------------------------------------
 
     def _build_response(
         self,
@@ -160,6 +182,6 @@ class RAGPipeline:
 
             ],
 
-            "retrieved_chunks": len(ranked)
+            "retrieved_chunks": len(ranked),
 
         }

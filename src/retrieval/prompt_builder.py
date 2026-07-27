@@ -41,15 +41,14 @@ class PromptBuilder:
 
         return "\n\n".join(context_parts)
 
-    def build_prediction_prompt(
+    def build_completion_prompt(
         self,
         user_input: str,
         candidates: List[Dict]
     ) -> str:
         """
-        Build prompt for next-word prediction / sentence completion.
+        Build prompt for LLM-based text completion.
         """
-
         context = self._build_context(candidates)
 
         prompt = f"""

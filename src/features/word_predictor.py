@@ -1,69 +1,56 @@
 """
-Word Predictor
+Predictor Module
 
-Feature layer for next-word prediction.
-
-Handles:
-- Retrieval
-- Candidate extraction
-- Ranking
-
-Delegates prediction logic to a prediction strategy
-selected by PredictorFactory.
+Provides next-word prediction using the shared RAG pipeline.
 """
 
-from typing import Dict
+from typing import Dict, Optional
 
 from config import TOP_K_RESULTS
-from src.retrieval.retriever import Retriever
-from src.retrieval.candidate_extractor import CandidateExtractor
-from src.retrieval.ranker import Ranker
-from src.prediction.predictor_factory import PredictorFactory
+from src.pipeline.rag_pipeline import RAGPipeline
 
 
 class WordPredictor:
     """
-    High-level word prediction feature.
+    High-level interface for word prediction.
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        pipeline: Optional[RAGPipeline] = None,
+    ) -> None:
+        """
+        Initialize WordPredictor.
 
-        self.retriever = Retriever()
-        self.extractor = CandidateExtractor()
-        self.ranker = Ranker()
+        If a pipeline is provided, it will be reused.
+        Otherwise, create a new pipeline.
+        """
 
-        # Current prediction strategy
-        self.predictor = PredictorFactory.get_predictor()
+        self.pipeline = pipeline or RAGPipeline()
 
-    def predict_next_words(
+    def predict(
         self,
         user_input: str,
-        top_k_chunks: int = TOP_K_RESULTS,
-        top_n_words: int = 5,
+        top_k: int = TOP_K_RESULTS,
     ) -> Dict:
+        """
+        Predict the next words for the user's input.
 
-        retrieved = self.retriever.retrieve(
-            query=user_input,
-            top_k=top_k_chunks,
+        Parameters
+        ----------
+        user_input : str
+            User query.
+
+        top_k : int
+            Number of retrieved chunks.
+
+        Returns
+        -------
+        Dict
+            Prediction result.
+        """
+
+        return self.pipeline.predict(
+            user_input=user_input,
+            top_k=top_k,
         )
-
-        candidates = self.extractor.extract(retrieved)
-
-        ranked = self.ranker.rank(candidates)
-
-        result = self.predictor.predict(
-            query=user_input,
-            ranked_chunks=ranked,
-            top_n_words=top_n_words,
-        )
-
-        result["sources"] = [
-            {
-                "file_name": item["file_name"],
-                "chunk_id": item["chunk_id"],
-                "score": item["score"],
-            }
-            for item in ranked
-        ]
-
-        return result

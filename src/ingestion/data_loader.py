@@ -5,6 +5,7 @@ Data Loader Module for RAG AI Workspace.
 from __future__ import annotations
 
 import logging
+import re
 from pathlib import Path
 from typing import List
 
@@ -17,6 +18,13 @@ from config import (
 
 logger = logging.getLogger(__name__)
 
+# =============================================================================
+# Development Configuration
+# =============================================================================
+
+# None = Load all articles
+MAX_ARTICLES = 20000
+
 
 class DataLoader:
     """
@@ -28,12 +36,19 @@ class DataLoader:
 
     def get_supported_files(self) -> List[Path]:
         """
-        Return all supported files from the data directory.
+        Return supported files.
         """
+
         files: List[Path] = []
 
         for extension in SUPPORTED_EXTENSIONS:
-            files.extend(self.data_directory.glob(f"*{extension}"))
+            files.extend(
+                self.data_directory.rglob(f"*{extension}")
+            )
+
+        files.extend(
+            sorted(self.data_directory.rglob("wiki_*"))
+        )
 
         files.sort()
 
@@ -41,18 +56,59 @@ class DataLoader:
 
         return files
 
+    def split_wikipedia_articles(self, text: str) -> List[dict]:
+        """
+        Split a Wikipedia dump into individual articles.
+
+        Each article begins with a title followed by a blank line.
+        """
+
+        text = text.replace("\r\n", "\n")
+
+        pattern = re.compile(
+            r"\n{3,}"
+        )
+
+        raw_articles = pattern.split(text)
+
+        articles = []
+
+        for article in raw_articles:
+
+            article = article.strip()
+
+            if not article:
+                continue
+
+            lines = article.split("\n")
+
+            if len(lines) < 2:
+                continue
+
+            title = lines[0].strip()
+
+            content = "\n".join(lines[1:]).strip()
+
+            if len(content) < 100:
+                continue
+
+            articles.append(
+                {
+                    "title": title,
+                    "content": content,
+                }
+            )
+
+        return articles
+
     def load_csv(self, file_path: Path) -> pd.DataFrame:
-        """
-        Load a CSV file.
-        """
+
         logger.info("Loading CSV: %s", file_path)
 
         return pd.read_csv(file_path)
 
     def load_txt(self, file_path: Path) -> str:
-        """
-        Load a TXT file.
-        """
+
         logger.info("Loading TXT: %s", file_path)
 
         return file_path.read_text(
@@ -61,54 +117,82 @@ class DataLoader:
         )
 
     def load_pdf(self, file_path: Path) -> str:
-        """
-        Load a PDF file.
-        """
+
         from pypdf import PdfReader
 
         logger.info("Loading PDF: %s", file_path)
 
         reader = PdfReader(file_path)
 
-        text = []
+        pages = []
 
         for page in reader.pages:
+
             extracted = page.extract_text()
 
             if extracted:
-                text.append(extracted)
+                pages.append(extracted)
 
-        return "\n".join(text)
-
-    def load_file(self, file_path: Path):
-        """
-        Load a single supported file.
-        """
-        suffix = file_path.suffix.lower()
-
-        if suffix == ".csv":
-            return self.load_csv(file_path)
-
-        if suffix == ".txt":
-            return self.load_txt(file_path)
-
-        if suffix == ".pdf":
-            return self.load_pdf(file_path)
-
-        raise ValueError(f"Unsupported file type: {suffix}")
+        return "\n".join(pages)
 
     def load_all(self) -> list:
-        """
-        Load every supported file from the configured directory.
-        """
+
         loaded_documents = []
 
+        article_count = 0
+
         for file_path in self.get_supported_files():
+
+            # Wikipedia files
+            if file_path.name.startswith("wiki_"):
+
+                text = self.load_txt(file_path)
+
+                articles = self.split_wikipedia_articles(text)
+
+                for article in articles:
+
+                    loaded_documents.append(
+                        {
+                            "file_name": article["title"],
+                            "file_path": str(file_path),
+                            "content": article["content"],
+                        }
+                    )
+
+                    article_count += 1
+
+                    if (
+                        MAX_ARTICLES is not None
+                        and article_count >= MAX_ARTICLES
+                    ):
+                        logger.info(
+                            "Loaded %d Wikipedia articles.",
+                            article_count,
+                        )
+                        return loaded_documents
+
+                continue
+
+            suffix = file_path.suffix.lower()
+
+            if suffix == ".csv":
+                content = self.load_csv(file_path)
+
+            elif suffix == ".txt":
+                content = self.load_txt(file_path)
+
+            elif suffix == ".pdf":
+                content = self.load_pdf(file_path)
+
+            else:
+                continue
+
             loaded_documents.append(
                 {
                     "file_name": file_path.name,
                     "file_path": str(file_path),
-                    "content": self.load_file(file_path),
+                    "content": content,
                 }
             )
 

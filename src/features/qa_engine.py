@@ -4,7 +4,7 @@ Question Answering Engine
 Uses the shared RAG pipeline to answer user questions.
 """
 
-from typing import Dict
+from typing import Dict, Optional
 
 from config import TOP_K_RESULTS
 from src.pipeline.rag_pipeline import RAGPipeline
@@ -15,9 +15,18 @@ class QAEngine:
     Question Answering feature.
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        pipeline: Optional[RAGPipeline] = None,
+    ) -> None:
+        """
+        Initialize QA Engine.
 
-        self.pipeline = RAGPipeline()
+        If a pipeline is provided, it will be reused.
+        Otherwise, create a new pipeline.
+        """
+
+        self.pipeline = pipeline or RAGPipeline()
 
     def answer(
         self,
