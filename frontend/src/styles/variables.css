@@ -1,0 +1,116 @@
+:root {
+
+    /* ===========================
+       COLORS
+    ============================ */
+
+    --bg: #0B0F16;
+    --surface: #111722;
+    --surface-2: #171D29;
+    --surface-3: #1C2432;
+
+    --sidebar: #10151E;
+    --navbar: #0D121A;
+
+    --card: #151C27;
+    --card-hover: #1A2230;
+
+    --welcome: #F3EBDD;
+
+    --border: #232C38;
+    --border-light: #2C3645;
+
+    /* ===========================
+       TEXT
+    ============================ */
+
+    --text: #F6F7F9;
+    --text-secondary: #B6BDC8;
+    --text-muted: #8C95A4;
+
+    /* ===========================
+       ACCENTS
+    ============================ */
+
+    --purple: #B8A5E6;
+    --purple-soft: #EEE8FB;
+
+    --green: #8DBF95;
+    --amber: #C8A16A;
+    --orange: #D28E52;
+
+    --danger: #D36B6B;
+
+    /* ===========================
+       SHADOWS
+    ============================ */
+
+    --shadow-sm:
+        0 2px 6px rgba(0,0,0,.15);
+
+    --shadow:
+        0 8px 24px rgba(0,0,0,.22);
+
+    /* ===========================
+       BORDER RADIUS
+    ============================ */
+
+    --radius-sm: 10px;
+    --radius: 14px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+
+    /* ===========================
+       SPACING
+    ============================ */
+
+    --space-1: 6px;
+    --space-2: 10px;
+    --space-3: 16px;
+    --space-4: 22px;
+    --space-5: 30px;
+    --space-6: 40px;
+
+    /* ===========================
+       LAYOUT
+    ============================ */
+
+    --sidebar-width: 230px;
+    --navbar-height: 72px;
+
+    --page-padding-x: 38px;
+    --page-padding-y: 28px;
+
+    /* ===========================
+       TYPOGRAPHY
+    ============================ */
+
+    --font-display:
+        "Playfair Display",
+        serif;
+
+    --font-body:
+        "Inter",
+        sans-serif;
+
+    --dashboard-title: 58px;
+
+    --section-title: 28px;
+
+    --welcome-title: 42px;
+
+    --stat-number: 24px;
+
+    --card-title: 18px;
+
+    --body: 15px;
+
+    --small: 13px;
+
+    /* ===========================
+       TRANSITION
+    ============================ */
+
+    --transition: .25s ease;
+
+}

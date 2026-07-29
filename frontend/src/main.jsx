@@ -5,6 +5,11 @@ import { Toaster } from "react-hot-toast";
 
 import App from "./App";
 
+import "./styles/dashboard.css";
+
+/* Global Styles */
+import "./styles/variables.css";
+import "./styles/theme.css";
 import "./styles/globals.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(

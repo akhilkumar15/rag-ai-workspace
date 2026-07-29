@@ -1,0 +1,75 @@
+/* ==========================================
+   GLOBAL THEME
+========================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+
+    font-family: var(--font-family);
+
+    background: var(--color-background);
+
+    color: var(--color-text-primary);
+
+    font-size: var(--font-size-md);
+
+    line-height: 1.6;
+
+    transition:
+        background var(--transition-normal),
+        color var(--transition-normal);
+
+    -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul,
+ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    font-weight: 600;
+}
+
+p {
+    margin: 0;
+}

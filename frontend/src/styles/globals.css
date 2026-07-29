@@ -1,18 +1,145 @@
+@import "tailwindcss";
+
+/* ----------------------- */
+/* Google Font */
+/* ----------------------- */
+
+
+
+/* ----------------------- */
+/* Theme Variables */
+/* ----------------------- */
+
+:root {
+
+  --bg-main: #111318;
+  --bg-sidebar: #171A21;
+  --bg-navbar: #171A21;
+
+  --card-dark: #20242E;
+  --card-light: #F4EFE6;
+
+  --border: rgba(255,255,255,.06);
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #9CA3AF;
+
+  --blue: #4F7CFF;
+
+  --radius: 16px;
+
+  --transition: .25s ease;
+
+}
+
+/* ----------------------- */
+/* Reset */
+/* ----------------------- */
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
 }
 
 html,
 body,
 #root {
-    width: 100%;
-    height: 100%;
-    font-family: "Segoe UI", sans-serif;
+
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
 }
 
 body {
-    background-color: #0f172a;
-    color: #f8fafc;
+
+  font-family: "Inter", sans-serif;
+
+  background: var(--bg-main);
+
+  color: var(--text-primary);
+
+  -webkit-font-smoothing: antialiased;
+
+}
+
+/* ----------------------- */
+
+a {
+
+  color: inherit;
+  text-decoration: none;
+
+}
+
+button,
+input,
+textarea {
+
+  font-family: inherit;
+
+}
+
+button {
+
+  cursor: pointer;
+  transition: var(--transition);
+
+}
+
+/* ----------------------- */
+/* Scrollbar */
+/* ----------------------- */
+
+::-webkit-scrollbar {
+
+  width: 8px;
+
+}
+
+::-webkit-scrollbar-track {
+
+  background: transparent;
+
+}
+
+::-webkit-scrollbar-thumb {
+
+  background: #2B313D;
+  border-radius: 999px;
+
+}
+
+::-webkit-scrollbar-thumb:hover {
+
+  background: #3B4252;
+
+}
+
+/* ----------------------- */
+/* Selection */
+/* ----------------------- */
+
+::selection {
+
+  background: #4F7CFF;
+  color: white;
+
+}
+
+/* ----------------------- */
+/* Animation */
+/* ----------------------- */
+
+* {
+
+  transition:
+      background-color .25s ease,
+      border-color .25s ease,
+      color .25s ease,
+      box-shadow .25s ease;
+
 }

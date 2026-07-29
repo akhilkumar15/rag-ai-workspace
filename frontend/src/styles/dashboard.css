@@ -1,0 +1,565 @@
+/* =====================================================
+   DASHBOARD LAYOUT
+===================================================== */
+
+.dashboard-page{
+    min-height:100vh;
+    background:#0A0A0E;
+    padding:24px;
+    color:#f8fafc;
+}
+
+.dashboard-container{
+    max-width:1460px;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+}
+
+
+/* =====================================================
+   WELCOME HERO
+===================================================== */
+
+.welcome-hero{
+    background:#efe5d6;
+    border-radius:22px;
+    
+    padding:22px 26px;
+    box-shadow:
+        0 20px 45px rgba(0,0,0,.18);
+}
+
+.welcome-content{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:30px;
+}
+
+.welcome-left{
+    flex:1;
+}
+
+.welcome-title{
+    font-size:26px;
+    font-weight:700;
+    font-family:"Playfair Display",serif;
+    color:#111827;
+    margin-bottom:14px;
+    line-height:1.1;
+}
+
+.welcome-subtitle{
+    color:#5E5A56;
+    font-size:15px;
+    line-height:1.6;
+    max-width:720px;
+}
+
+.welcome-divider{
+    width:1px;
+    height:60px;
+    background:#d4c9b8;
+}
+
+.welcome-date{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.welcome-date svg{
+    color:#f59e0b;
+}
+
+.date-label{
+    font-size:12px;
+    letter-spacing:2px;
+    color:#7b8491;
+    margin-bottom:6px;
+    text-transform:uppercase;
+}
+
+.welcome-date h3{
+    color:#111827;
+    font-size:18px;
+    font-weight:700;
+}
+
+
+/* =====================================================
+   FEATURE SHORTCUTS
+===================================================== */
+
+.welcome-features{
+    margin-top:22px;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:14px;
+}
+
+.feature-card{
+    background:white;
+    border-radius:14px;
+    padding:12px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    transition:.25s;
+    cursor:pointer;
+    border:1px solid #ececec;
+}
+
+.feature-card:hover{
+    transform:translateY(-4px);
+    box-shadow:
+        0 18px 35px rgba(0,0,0,.10);
+}
+
+.feature-icon{
+    width:32px;
+    height:32px;
+    border-radius:10px;
+    background:#F5F3FB;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#B8A5E6;
+}
+
+.feature-card span{
+    font-weight:600;
+    color:#1f2937;
+    font-size:13px;
+    letter-spacing:.3px;
+}
+
+
+/* =====================================================
+   COMMON SECTION TITLES
+===================================================== */
+
+.tools-section h2,
+.project-overview h2{
+    font-size:20px;
+    font-family:"Playfair Display",serif;
+    color:#F2F2ED;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.tools-section p,
+.project-overview p{
+    color:#9ca3af;
+    line-height:1.7;
+}
+
+
+/* =====================================================
+   STATS GRID
+===================================================== */
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-top:6px;
+}
+
+.stat-card{
+    background:#14141A;
+    border:1px solid #242430;
+    border-radius:18px;
+    padding:18px;
+    transition:.25s;
+    cursor:pointer;
+}
+
+.stat-card:hover{
+    transform:translateY(-4px);
+    border-color:#3A4558;
+    box-shadow:0 14px 30px rgba(0,0,0,.25);
+}
+
+.stat-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.stat-icon{
+    width:36px;
+    height:36px;
+    border-radius:12px;
+    background:#1B2230;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#8B5CF6;
+}
+
+.trend-icon{
+    color:#7A8597;
+}
+
+.stat-title{
+    font-size:12px;
+    letter-spacing:1px;
+    color:#8E97A6;
+    text-transform:uppercase;
+    margin-bottom:12px;
+}
+
+.stat-value{
+    font-family:"Playfair Display",serif;
+    font-size:24px;
+    color:#F8F8F8;
+    margin-bottom:10px;
+}
+
+.stat-subtitle{
+    font-size:14px;
+    color:#9AA3B1;
+}
+
+/* COLORS */
+.stat-card.green .stat-value{
+    color:#95B89B;
+}
+
+.stat-card.orange .stat-value{
+    color:#C8A16A;
+}
+
+.stat-card.purple .stat-value{
+    color:#B6A6D9;
+}
+
+.stat-card.blue .stat-value{
+    color:#FFFFFF;
+}
+
+/* =====================================================
+   AI TOOLS
+===================================================== */
+
+.tools-section{
+    margin-top:34px;
+}
+
+.tools-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:20px;
+}
+
+.tools-header h2{
+    font-family:"Playfair Display",serif;
+    font-size:20px;
+    color:#F2F2ED;
+    margin-bottom:8px;
+}
+
+.tools-header p{
+    color:#8F98A8;
+}
+
+.tools-list{
+    background:#141923;
+    border:1px solid #232B38;
+    border-radius:18px;
+    overflow:hidden;
+}
+
+.tool-row{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:22px;
+
+    padding:16px 20px;
+
+    border-bottom:1px solid #232B38;
+
+}
+
+.tool-row:last-child{
+    border-bottom:none;
+}
+
+.tool-row:hover{
+    background:#1A202B;
+}
+
+.tool-number{
+
+    width:42px;
+
+    color:#9AA3B1;
+
+    font-size:18px;
+
+}
+
+.tool-icon{
+
+    width:36px;
+
+    height:36px;
+
+    border-radius:12px;
+
+    background:#1E2633;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#8B5CF6;
+
+    flex-shrink:0;
+
+}
+
+.tool-content{
+
+    flex:1;
+
+}
+
+.tool-content h3{
+
+    font-family:"Playfair Display",serif;
+
+    font-size:16px;
+
+    color:white;
+
+    margin-bottom:8px;
+
+}
+
+.tool-content p{
+
+    color:#98A1AF;
+
+    line-height:1.6;
+
+}
+
+.tool-tag{
+
+    width:150px;
+
+    text-align:right;
+
+    color:#B6BEC9;
+
+    font-size:14px;
+
+    flex-shrink:0;
+
+}
+
+.tool-button{
+
+    width:95px;
+
+    height:42px;
+
+    border-radius:12px;
+
+    background:transparent;
+
+    border:1px solid #D9A257;
+    color:#D9A257;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:8px;
+
+    cursor:pointer;
+
+    flex-shrink:0;
+
+    transition:.25s;
+
+}
+
+.tool-button:hover{
+
+    background:#D9A257;
+    border-color:#D9A257;
+    color:#0A0A0E;
+
+}
+
+/* =====================================================
+   PROJECT OVERVIEW
+===================================================== */
+
+.project-overview{
+    margin-top:30px;
+    background:#14141A;
+    border:1px solid #242430;
+    border-radius:18px;
+    padding:20px;
+}
+
+.overview-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:30px;
+    margin-bottom:28px;
+}
+
+.overview-header h2{
+    font-family:"Playfair Display",serif;
+    font-size:20px;
+color:#F2F2ED;
+    margin-bottom:10px;
+}
+
+.overview-header p{
+    color:#9AA3B1;
+    line-height:1.7;
+    max-width:720px;
+}
+
+.architecture-btn{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    padding:12px 18px;
+
+    border-radius:12px;
+
+    border:1px solid #374151;
+
+    background:transparent;
+
+    color:#F59E0B;
+
+    cursor:pointer;
+
+    transition:.25s;
+}
+
+.architecture-btn:hover{
+
+    background:#F59E0B;
+
+    color:#111827;
+
+}
+
+.technology-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(6,1fr);
+
+    gap:18px;
+
+}
+
+.technology-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    background:#191F2A;
+
+    border:1px solid #2A3342;
+
+    border-radius:14px;
+
+    padding:18px;
+
+    transition:.25s;
+
+}
+
+.technology-card:hover{
+
+    transform:translateY(-3px);
+
+    border-color:#4B5563;
+
+}
+
+.technology-icon{
+
+    width:36px;
+
+    height:36px;
+
+    border-radius:10px;
+
+    background:#F5F3FB;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#B6A6D9;
+
+}
+
+.technology-card h4{
+
+    color:#F8F8F8;
+
+    font-size:14px;
+
+    margin-bottom:4px;
+
+}
+
+.technology-card span{
+
+    color:#8F98A8;
+
+    font-size:13px;
+
+}
+
+/* =====================================================
+   ACCESSIBILITY
+===================================================== */
+
+.feature-card{
+    border:none;
+    outline:none;
+    cursor:pointer;
+    font:inherit;
+}
+
+.tool-button{
+    cursor:pointer;
+}
+
+.feature-card:focus-visible,
+.tool-button:focus-visible{
+    outline:2px solid #D9A257;
+    outline-offset:2px;
+}

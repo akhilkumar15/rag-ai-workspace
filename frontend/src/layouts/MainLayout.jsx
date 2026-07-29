@@ -3,20 +3,64 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/common/Sidebar";
 import Navbar from "../components/common/Navbar";
 
-function MainLayout() {
+import "../styles/layout.css";
+
+export default function MainLayout() {
     return (
-        <div className="app-layout">
-            <Sidebar />
+        <div className="app-shell">
 
-            <div className="main-section">
-                <Navbar />
+            {/* Simulated Desktop Window */}
 
-                <main className="page-content">
-                    <Outlet />
-                </main>
+            <div className="window-bar">
+
+                <div className="window-left">
+
+                    <div className="window-logo">
+                        A
+                    </div>
+
+                    <span>
+                        RAG AI Workspace
+                    </span>
+
+                </div>
+
+                <div className="window-controls">
+
+                    <button>—</button>
+
+                    <button>□</button>
+
+                    <button>✕</button>
+
+                </div>
+
             </div>
+
+            {/* Workspace */}
+
+            <div className="workspace">
+
+                {/* Sidebar */}
+
+                <Sidebar />
+
+                {/* Main */}
+
+                <section className="content-area">
+
+                    <Navbar />
+
+                    <main className="page-content">
+
+                        <Outlet />
+
+                    </main>
+
+                </section>
+
+            </div>
+
         </div>
     );
 }
-
-export default MainLayout;
