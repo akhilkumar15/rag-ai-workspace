@@ -1,49 +1,114 @@
 import { useState } from "react";
-import { SendHorizontal } from "lucide-react";
+import { Sparkles, RotateCcw } from "lucide-react";
 
-function PredictionInput({ onPredict, loading }) {
+function PredictionInput({
+  onPredict,
+  loading,
+  onClear,
+}) {
   const [text, setText] = useState("");
 
   const handleSubmit = () => {
-    if (!text.trim()) return;
-    onPredict(text);
+    const trimmed = text.trim();
+
+    if (!trimmed || loading) return;
+
+    onPredict(trimmed);
+  };
+
+  const handleClear = () => {
+    if (loading) return;
+
+    setText("");
+    onClear?.();
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSubmit();
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
+    <div>
 
-      <h2 className="text-2xl font-bold mb-2">
-        Word Prediction
+      <h2 className="text-2xl font-bold text-white">
+        Input Phrase
       </h2>
 
-      <p className="text-slate-500 mb-6">
-        Enter a phrase and predict the next word.
-      </p>
-
-      <div className="flex gap-3">
+      <div className="mt-5 flex flex-col gap-3 lg:flex-row">
 
         <input
-          type="text"
           value={text}
+          disabled={loading}
           onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSubmit();
-            }
-          }}
-          placeholder="Example: Artificial Intelligence"
-          className="flex-1 border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+          onKeyDown={handleKeyDown}
+          placeholder="Artificial Intelligence is..."
+          className="
+            h-14
+            flex-1
+            rounded-2xl
+            border
+            border-zinc-700
+            bg-[#10141c]
+            px-5
+            text-white
+            placeholder:text-zinc-500
+            outline-none
+            focus:border-amber-400
+            focus:ring-2
+            focus:ring-amber-400/20
+          "
         />
 
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="bg-blue-600 text-white px-6 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+          className="
+            flex
+            h-14
+            items-center
+            justify-center
+            gap-2
+            rounded-2xl
+            bg-amber-500
+            px-7
+            font-semibold
+            text-black
+            hover:bg-amber-400
+          "
         >
-          <SendHorizontal size={20} />
+          <Sparkles size={18}/>
+          {loading ? "Predicting..." : "Predict"}
+        </button>
+
+        <button
+          onClick={handleClear}
+          disabled={loading}
+          className="
+            flex
+            h-14
+            items-center
+            justify-center
+            gap-2
+            rounded-2xl
+            border
+            border-zinc-700
+            bg-zinc-900
+            px-7
+            text-zinc-300
+            hover:bg-zinc-800
+            hover:text-white
+          "
+        >
+          <RotateCcw size={18}/>
+          Clear
         </button>
 
       </div>
+
+      <p className="mt-4 text-sm text-zinc-400">
+        Press <span className="font-semibold text-white">Enter</span> to
+        predict, or click a predicted word below.
+      </p>
 
     </div>
   );

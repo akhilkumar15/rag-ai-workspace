@@ -74,8 +74,10 @@ class RAGPipeline:
         )
 
         return self.predictor.predict(
-          query=user_input,
-          ranked_candidates=ranked,
+         query=user_input,
+         ranked_candidates=ranked,
+         retrieved_chunks=retrieved_chunks,
+         top_k=top_k,
         )
     # -------------------------------------------------------------
     # QA

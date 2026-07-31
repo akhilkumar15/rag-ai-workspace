@@ -23,9 +23,30 @@ class PredictionModel(BaseModel):
     rank: int
 
 
+class RetrievedContextModel(BaseModel):
+    text: str
+    source: str
+    similarity_score: float
+
+
+class PredictionAnalyticsModel(BaseModel):
+    embedding_model: str
+    retrieval_time_ms: int
+    prediction_method: str
+    top_k: int
+    confidence: float
+    candidate_count: int
+
+
 class WordPredictionResponse(BaseModel):
     query: str
+
     predictions: List[PredictionModel]
+
+    retrieved_context: RetrievedContextModel
+
+    analytics: PredictionAnalyticsModel
+
     count: int
 
 

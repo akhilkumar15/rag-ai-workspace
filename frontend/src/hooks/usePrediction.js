@@ -9,8 +9,17 @@ const usePrediction = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const reset = () => {
+    setPredictions([]);
+    setContext([]);
+    setError(null);
+  };
+
   const predict = async (text) => {
-    if (!text.trim()) return;
+    if (!text.trim()) {
+      reset();
+      return;
+    }
 
     try {
       setLoading(true);
@@ -24,15 +33,17 @@ const usePrediction = () => {
         text,
       });
 
+      console.log("================================");
       console.log("Request Successful");
       console.log("Full Response:", response);
       console.log("Response Data:", response.data);
 
       setPredictions(response.data.predictions || []);
-      setContext([]);
+
+      // Reserved for future backend updates
+      setContext(response.data.context || []);
 
     } catch (err) {
-
       console.error("================================");
       console.error("Prediction Error");
       console.error("Complete Error:", err);
@@ -42,11 +53,10 @@ const usePrediction = () => {
         console.error("Response:", err.response.data);
       }
 
-      setPredictions([]);
-      setContext([]);
+      reset();
 
       setError(
-        err.detail ||
+        err.response?.data?.detail ||
         err.message ||
         "Prediction failed."
       );
@@ -54,12 +64,6 @@ const usePrediction = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const reset = () => {
-    setPredictions([]);
-    setContext([]);
-    setError(null);
   };
 
   return {
