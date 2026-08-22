@@ -4,121 +4,93 @@ function PredictionGrid({
   predictions = [],
   onSelectPrediction,
 }) {
-  if (!predictions.length) {
-    return (
-      <section className="rounded-3xl border border-zinc-800 bg-[#151922] p-6">
-
-        <h2 className="text-2xl font-bold text-white">
-          Predicted Next Words
-        </h2>
-
-        <div className="mt-6 flex h-40 items-center justify-center rounded-2xl border border-dashed border-zinc-700 bg-[#10141c] text-zinc-500">
-          No predictions available.
-        </div>
-
-      </section>
-    );
-  }
-
   return (
-    <section className="rounded-3xl border border-zinc-800 bg-[#151922] p-6">
+    <section className="prediction-grid-section">
 
-      {/* Header */}
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
-      <div className="mb-6 flex items-end">
+      <div className="prediction-grid-header">
 
-        <h2 className="text-2xl font-bold text-white">
+        <h2>
           Predicted Next Words
         </h2>
 
-        <span className="ml-3 text-sm text-zinc-500">
-          Top {predictions.length}
+        <span>
+          (Top {predictions.length})
         </span>
 
       </div>
 
-      {/* Cards */}
 
-      <div className="grid grid-cols-5 gap-4">
+      {/* =====================================================
+          CARDS
+      ===================================================== */}
 
-        {predictions.map((prediction, index) => (
-          <button
-            key={`${prediction.word}-${index}`}
-            onClick={() => onSelectPrediction?.(prediction.word)}
-            className="
-              group
-              flex
-              h-32
-              flex-col
-              justify-between
-              rounded-2xl
-              border
-              border-zinc-700
-              bg-[#10141c]
-              p-4
-              text-left
-              transition-all
-              duration-200
-              hover:-translate-y-1
-              hover:border-amber-400
-              hover:bg-[#161b25]
-            "
-          >
-            <div className="flex items-center gap-3">
+      {predictions.length > 0 ? (
 
-              <div
-                className="
-                  flex
-                  h-7
-                  w-7
-                  items-center
-                  justify-center
-                  rounded-lg
-                  bg-amber-500
-                  text-xs
-                  font-bold
-                  text-black
-                "
-              >
-                {index + 1}
+        <div className="prediction-cards">
+
+          {predictions.slice(0, 5).map((prediction, index) => (
+
+            <button
+              key={`${prediction.word}-${index}`}
+              onClick={() =>
+                onSelectPrediction?.(prediction.word)
+              }
+              className="prediction-card"
+            >
+
+              {/* Badge */}
+
+              <div className="prediction-card-badge">
+                {prediction.rank ?? index + 1}
               </div>
 
-              <span className="truncate text-base font-semibold text-white">
+
+              {/* Word */}
+
+              <div className="prediction-card-word">
                 {prediction.word}
-              </span>
+              </div>
 
-            </div>
 
-            <div>
+              {/* Score */}
 
-              <p className="text-xs uppercase tracking-wider text-zinc-500">
-                Confidence
-              </p>
+              <div className="prediction-card-score">
+                {Number(prediction.score).toFixed(2)}
+              </div>
 
-              <p className="mt-1 text-2xl font-bold text-white">
-                {(prediction.score * 100).toFixed(0)}%
-              </p>
+            </button>
 
-            </div>
+          ))}
 
-          </button>
-        ))}
+        </div>
 
-      </div>
+      ) : (
 
-      {/* Footer */}
+        <div className="prediction-empty">
+          No predictions available.
+        </div>
 
-      <div className="mt-6 flex items-start gap-3 border-t border-zinc-800 pt-4">
+      )}
+
+
+      {/* =====================================================
+          FOOTER TIP
+      ===================================================== */}
+
+      <div className="prediction-grid-footer">
 
         <Lightbulb
-          size={18}
-          className="mt-0.5 shrink-0 text-amber-400"
+          size={16}
         />
 
-        <p className="text-sm leading-6 text-zinc-400">
-          Click any predicted word to append it to the input and generate the
-          next set of predictions.
-        </p>
+        <span>
+          Click any predicted word to append it to your input and
+          continue generating predictions.
+        </span>
 
       </div>
 

@@ -5,9 +5,13 @@ Initializes the FastAPI server, configures middleware,
 and registers API routers.
 """
 
-from backend.routers.word_prediction import router as word_prediction_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from backend.routers.qa import router as qa_router
+from backend.routers.summarization import router as summarization_router
+from backend.routers.word_prediction import router as word_prediction_router
+
 
 app = FastAPI(
     title="RAG AI Workspace API",
@@ -15,13 +19,14 @@ app = FastAPI(
     version="1.1.0",
 )
 
+
 # ---------------------------------------------------
 # CORS Configuration
 # ---------------------------------------------------
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],          # Restrict in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,6 +38,8 @@ app.add_middleware(
 # ---------------------------------------------------
 
 app.include_router(word_prediction_router)
+app.include_router(qa_router)
+app.include_router(summarization_router)
 
 
 # ---------------------------------------------------
@@ -41,20 +48,14 @@ app.include_router(word_prediction_router)
 
 @app.get("/", tags=["Root"])
 def root():
-    """
-    Root endpoint.
-    """
     return {
         "message": "Welcome to RAG AI Workspace API",
-        "status": "running"
+        "status": "running",
     }
 
 
 @app.get("/health", tags=["Health"])
 def health():
-    """
-    Health check endpoint.
-    """
     return {
-        "status": "healthy"
+        "status": "healthy",
     }

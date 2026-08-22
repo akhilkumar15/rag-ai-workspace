@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Sparkles, RotateCcw } from "lucide-react";
+import {
+  Sparkles,
+  RotateCcw,
+} from "lucide-react";
 
 function PredictionInput({
   onPredict,
@@ -9,11 +12,11 @@ function PredictionInput({
   const [text, setText] = useState("");
 
   const handleSubmit = () => {
-    const trimmed = text.trim();
+    const trimmedText = text.trim();
 
-    if (!trimmed || loading) return;
+    if (!trimmedText || loading) return;
 
-    onPredict(trimmed);
+    onPredict(trimmedText);
   };
 
   const handleClear = () => {
@@ -24,93 +27,78 @@ function PredictionInput({
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleSubmit();
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
   };
 
   return (
-    <div>
+    <section className="prediction-input-card">
 
-      <h2 className="text-2xl font-bold text-white">
+      {/* Header */}
+
+      <h2 className="prediction-input-title">
         Input Phrase
       </h2>
 
-      <div className="mt-5 flex flex-col gap-3 lg:flex-row">
+
+      {/* Input + Buttons */}
+
+      <div className="prediction-input-row">
 
         <input
+          type="text"
           value={text}
-          disabled={loading}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
+          disabled={loading}
           placeholder="Artificial Intelligence is..."
-          className="
-            h-14
-            flex-1
-            rounded-2xl
-            border
-            border-zinc-700
-            bg-[#10141c]
-            px-5
-            text-white
-            placeholder:text-zinc-500
-            outline-none
-            focus:border-amber-400
-            focus:ring-2
-            focus:ring-amber-400/20
-          "
+          className="prediction-input-field"
         />
+
 
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="
-            flex
-            h-14
-            items-center
-            justify-center
-            gap-2
-            rounded-2xl
-            bg-amber-500
-            px-7
-            font-semibold
-            text-black
-            hover:bg-amber-400
-          "
+          className="prediction-button prediction-button-primary"
         >
-          <Sparkles size={18}/>
-          {loading ? "Predicting..." : "Predict"}
+          <Sparkles size={18} />
+
+          <span>
+            {loading ? "Predicting..." : "Predict"}
+          </span>
         </button>
+
 
         <button
           onClick={handleClear}
           disabled={loading}
-          className="
-            flex
-            h-14
-            items-center
-            justify-center
-            gap-2
-            rounded-2xl
-            border
-            border-zinc-700
-            bg-zinc-900
-            px-7
-            text-zinc-300
-            hover:bg-zinc-800
-            hover:text-white
-          "
+          className="prediction-button prediction-button-secondary"
         >
-          <RotateCcw size={18}/>
-          Clear
+          <RotateCcw size={18} />
+
+          <span>
+            Clear
+          </span>
         </button>
 
       </div>
 
-      <p className="mt-4 text-sm text-zinc-400">
-        Press <span className="font-semibold text-white">Enter</span> to
-        predict, or click a predicted word below.
-      </p>
 
-    </div>
+      {/* Helper */}
+
+      <div className="prediction-input-helper">
+
+        Press{" "}
+        <span>
+          Enter
+        </span>{" "}
+        to predict, or click a predicted word below to continue
+        generating suggestions.
+
+      </div>
+
+    </section>
   );
 }
 

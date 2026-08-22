@@ -1,11 +1,11 @@
 """
 Summarizer
 
-Uses the shared RAG pipeline to summarize
-retrieved document content.
+Provides summarization for both indexed documents
+and temporarily uploaded documents.
 """
 
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from config import TOP_K_RESULTS
 from src.pipeline.rag_pipeline import RAGPipeline
@@ -20,14 +20,12 @@ class Summarizer:
         self,
         pipeline: Optional[RAGPipeline] = None,
     ) -> None:
-        """
-        Initialize Summarizer.
-
-        If a pipeline is provided, it will be reused.
-        Otherwise, create a new pipeline.
-        """
 
         self.pipeline = pipeline or RAGPipeline()
+
+    # =========================================================
+    # INDEXED DOCUMENT SUMMARIZATION
+    # =========================================================
 
     def summarize(
         self,
@@ -35,10 +33,28 @@ class Summarizer:
         top_k: int = TOP_K_RESULTS,
     ) -> Dict:
         """
-        Summarize retrieved document content.
+        Summarize content retrieved from the existing
+        FAISS knowledge base.
         """
 
         return self.pipeline.summarize(
             query=query,
             top_k=top_k,
+        )
+
+    # =========================================================
+    # UPLOADED DOCUMENT SUMMARIZATION
+    # =========================================================
+
+    def summarize_uploaded_document(
+        self,
+        chunks: List[Dict],
+    ) -> Dict:
+        """
+        Summarize chunks belonging to a temporarily
+        uploaded document.
+        """
+
+        return self.pipeline.summarize_uploaded_document(
+            chunks=chunks,
         )

@@ -9,21 +9,27 @@ import ErrorMessage from "../components/common/ErrorMessage";
 
 import usePrediction from "../hooks/usePrediction";
 
-const USE_SAMPLE_DATA = false;
+/*
+|--------------------------------------------------------------------------
+| TEMPORARY SAMPLE DATA
+|--------------------------------------------------------------------------
+| Replace with live API response from usePrediction() when backend is
+| fully connected to the frontend prediction flow.
+*/
 
-const samplePredictions = [
-  { word: "is", score: 0.91 },
-  { word: "becoming", score: 0.86 },
-  { word: "used", score: 0.79 },
-  { word: "revolutionizing", score: 0.74 },
-  { word: "transforming", score: 0.72 },
+const defaultPredictions = [
+  { rank: 1, word: "is", score: 0.91 },
+  { rank: 2, word: "becoming", score: 0.86 },
+  { rank: 3, word: "used", score: 0.79 },
+  { rank: 4, word: "revolutionizing", score: 0.74 },
+  { rank: 5, word: "transforming", score: 0.72 },
 ];
 
 const sampleContext = [
   {
     title: "Wikipedia: Artificial Intelligence",
     content:
-      "Artificial Intelligence is intelligence demonstrated by machines, in contrast to natural intelligence displayed by humans.",
+      "Artificial Intelligence is intelligence demonstrated by machines, in contrast to natural intelligence displayed by humans. AI is a broad field that encompasses machine learning, natural language processing, robotics, and more.",
     similarity: 0.91,
     source: "wiki_015.txt",
   },
@@ -48,26 +54,37 @@ function WordPredictionPage() {
     reset,
   } = usePrediction();
 
-  const displayPredictions = USE_SAMPLE_DATA
-    ? samplePredictions
-    : predictions;
+  /*
+   * Keep the approved sample predictions visible when the API has not
+   * returned predictions yet.
+   */
+  const displayPredictions =
+    predictions && predictions.length > 0
+      ? predictions
+      : defaultPredictions;
 
-  const displayContext = USE_SAMPLE_DATA
-    ? sampleContext
-    : context;
+  const displayContext =
+    context && context.length > 0
+      ? context
+      : sampleContext;
 
   return (
-    <main className="w-full">
+    <main className="prediction-page">
 
-      {/* Header */}
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
-      <div className="mb-8">
+      <div className="prediction-header-wrap">
         <PredictionHeader />
       </div>
 
-      {/* Input */}
 
-      <div className="mb-7">
+      {/* =====================================================
+          INPUT
+      ===================================================== */}
+
+      <div className="prediction-input-wrap">
         <PredictionInput
           onPredict={predict}
           onClear={reset}
@@ -75,36 +92,49 @@ function WordPredictionPage() {
         />
       </div>
 
-      {loading && <LoadingSpinner />}
 
-      {error && <ErrorMessage message={error} />}
+      {/* =====================================================
+          LOADING / ERROR
+      ===================================================== */}
 
-      {/* Prediction + Retrieval */}
+      {loading && (
+        <div className="prediction-status">
+          <LoadingSpinner />
+        </div>
+      )}
 
-      <section
-        className="
-          mb-8
-          grid
-          items-start
-          gap-6
-          xl:grid-cols-[1.8fr_1fr]
-        "
-      >
+      {error && (
+        <div className="prediction-status">
+          <ErrorMessage message={error} />
+        </div>
+      )}
+
+
+      {/* =====================================================
+          PREDICTIONS + RETRIEVED CONTEXT
+      ===================================================== */}
+
+      <section className="prediction-middle">
+
         <PredictionGrid
           predictions={displayPredictions}
         />
 
         <RetrievalPanel
           context={displayContext}
-          useSampleData={USE_SAMPLE_DATA}
+          useSampleData={false}
         />
+
       </section>
 
-      {/* Analytics */}
+
+      {/* =====================================================
+          ANALYTICS
+      ===================================================== */}
 
       <AnalyticsPanel
         analytics={sampleAnalytics}
-        useSampleData={USE_SAMPLE_DATA}
+        useSampleData={true}
       />
 
     </main>

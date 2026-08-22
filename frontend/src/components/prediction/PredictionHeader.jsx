@@ -6,11 +6,11 @@ import {
 
 function PredictionHeader() {
   return (
-    <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <header className="flex items-center justify-between gap-6">
 
       {/* Left */}
 
-      <div className="flex items-center gap-5">
+      <div className="flex min-w-0 items-center gap-5">
 
         <div
           className="
@@ -24,6 +24,8 @@ function PredictionHeader() {
             border
             border-violet-500/20
             bg-violet-500/10
+            shadow-lg
+            shadow-violet-500/10
           "
         >
           <BrainCircuit
@@ -32,13 +34,13 @@ function PredictionHeader() {
           />
         </div>
 
-        <div>
+        <div className="min-w-0">
 
-          <h1 className="text-[52px] leading-none font-bold tracking-tight text-white">
+          <h1 className="text-4xl font-bold tracking-tight text-white">
             Word Prediction
           </h1>
 
-          <p className="mt-1 text-[18px] leading-6 text-zinc-400">
+          <p className="mt-1 max-w-3xl text-base leading-6 text-zinc-400">
             Predict the next word using retrieved context and
             Retrieval-Augmented Generation (RAG).
           </p>
@@ -49,7 +51,7 @@ function PredictionHeader() {
 
       {/* Right */}
 
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-3">
 
         <button
           className="
@@ -59,20 +61,22 @@ function PredictionHeader() {
             rounded-xl
             border
             border-zinc-700
-            bg-zinc-900
-            px-4
-            py-2.5
-            text-sm
-            font-medium
+            bg-zinc-900/80
+            px-5
+            py-3
             text-zinc-300
-            transition-colors
+            transition-all
+            duration-200
             hover:border-zinc-600
             hover:bg-zinc-800
             hover:text-white
           "
         >
-          <History size={17} />
-          View History
+          <History size={18} />
+
+          <span className="font-medium">
+            View History
+          </span>
         </button>
 
         <div
@@ -83,9 +87,9 @@ function PredictionHeader() {
             rounded-xl
             border
             border-zinc-700
-            bg-zinc-900
-            px-4
-            py-2.5
+            bg-zinc-900/80
+            px-5
+            py-3
           "
         >
           <CheckCircle2
@@ -93,10 +97,9 @@ function PredictionHeader() {
             className="text-green-400"
           />
 
-          <span className="text-sm font-medium text-white">
+          <span className="font-medium text-white">
             Ready
           </span>
-
         </div>
 
       </div>
