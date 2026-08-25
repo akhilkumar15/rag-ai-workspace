@@ -1,84 +1,159 @@
-import { Bell, ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
+import { useLocation } from "react-router-dom";
+
+const pageInfo = {
+  "/dashboard": {
+    title: "Dashboard",
+    subtitle:
+      "Monitor your retrieval pipeline and explore your AI workspace.",
+  },
+
+  "/word-prediction": {
+    title: "Word Prediction",
+    subtitle:
+      "Predict the most likely next words using your RAG pipeline.",
+  },
+
+  "/question-answer": {
+    title: "Question Answering",
+    subtitle:
+      "Ask questions and retrieve answers from your knowledge base.",
+  },
+
+  "/summarization": {
+    title: "Summarization",
+    subtitle:
+      "Upload a document and get an AI-generated summary.",
+  },
+
+  "/comparison": {
+    title: "Comparison",
+    subtitle:
+      "Compare two documents and identify similarities and differences.",
+  },
+
+  "/retrieval-viewer": {
+    title: "Retrieval Viewer",
+    subtitle:
+      "Inspect retrieved chunks, relevance scores, and sources for any query.",
+  },
+
+  "/upload-documents": {
+    title: "Upload Documents",
+    subtitle:
+      "Add documents to your RAG knowledge base.",
+  },
+
+  "/settings": {
+    title: "Settings",
+    subtitle:
+      "Configure your RAG AI Workspace.",
+  },
+};
+
 
 export default function Navbar() {
-    return (
-        <header className="navbar">
 
-            <div className="navbar-left">
+  const location = useLocation();
 
-                <div>
+  const current =
+    pageInfo[location.pathname] ||
+    pageInfo["/dashboard"];
 
-                    <h1 className="page-title">
-                        Dashboard
-                    </h1>
 
-                    <p className="page-subtitle">
-                        Monitor your retrieval pipeline and explore your AI workspace.
-                    </p>
+  return (
+    <header className="navbar">
 
-                </div>
+      {/* =====================================================
+          LEFT
+      ===================================================== */}
 
-            </div>
+      <div className="navbar-left">
 
-            <div className="navbar-right">
+        <div className="navbar-breadcrumb">
 
-                {/* Search */}
+          <span>
+            Dashboard
+          </span>
 
-                <div className="search-wrapper">
+          <span className="breadcrumb-separator">
+            &gt;
+          </span>
 
-                    <Search
-                        size={18}
-                        className="search-icon"
-                    />
+          <strong>
+            {current.title}
+          </strong>
 
-                    <input
-                        type="text"
-                        placeholder="Search anything..."
-                    />
+        </div>
 
-                    <div className="shortcut-key">
-                        Ctrl K
-                    </div>
 
-                </div>
+        <h1 className="page-title">
+          {current.title}
+        </h1>
 
-                {/* Notification */}
 
-                <button className="notification-button">
+        <p className="page-subtitle">
+          {current.subtitle}
+        </p>
 
-                    <Bell size={20} />
+      </div>
 
-                    <span className="notification-dot"></span>
 
-                </button>
+      {/* =====================================================
+          RIGHT
+      ===================================================== */}
 
-                {/* Profile */}
+      <div className="navbar-right">
 
-                <div className="profile-card">
+        {/* Search */}
 
-                    <div className="avatar">
-                        GU
-                    </div>
+        <div className="search-wrapper">
 
-                    <div className="profile-details">
+          <Search
+            size={18}
+            className="search-icon"
+          />
 
-                        <h4>
-                            Guest User
-                        </h4>
+          <input
+            type="text"
+            placeholder="Search anything..."
+          />
 
-                        <span>
-                            <span className="online-dot"></span>
-                            Online
-                        </span>
+        </div>
 
-                    </div>
 
-                    <ChevronDown size={17} />
+        {/* Profile */}
 
-                </div>
+        <div className="profile-card">
 
-            </div>
+          <div className="avatar">
+            GU
+          </div>
 
-        </header>
-    );
+
+          <div className="profile-details">
+
+            <h4>
+              Guest User
+            </h4>
+
+            <span>
+
+              <span className="online-dot"></span>
+
+              Online
+
+            </span>
+
+          </div>
+
+
+          <ChevronDown size={17} />
+
+        </div>
+
+      </div>
+
+    </header>
+  );
 }

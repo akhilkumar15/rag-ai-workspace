@@ -6,6 +6,7 @@ Central orchestration module for all AI features.
 
 from __future__ import annotations
 
+import re
 from typing import Dict, List
 
 from config import TOP_K_RESULTS
@@ -181,7 +182,6 @@ class RAGPipeline:
             retrieved_chunks=retrieved_chunks,
         )
 
-
     # =============================================================
     # UPLOADED DOCUMENT SUMMARIZATION
     # =============================================================
@@ -210,7 +210,7 @@ class RAGPipeline:
         ):
 
             llm_result = self.llm.generate_with_metadata(
-                prompt=prompt,
+                prompt=prompt
             )
 
             result = {
@@ -257,9 +257,151 @@ class RAGPipeline:
             prompt
         )
 
+        structured_result = self._parse_comparison_response(
+            response=response
+        )
+
         return {
-            "response": response
+            "response": response,
+            "similarities": structured_result["similarities"],
+            "differences": structured_result["differences"],
+            "conclusion": structured_result["conclusion"],
         }
+
+    # =============================================================
+    # PARSE COMPARISON RESPONSE
+    # =============================================================
+
+    def _parse_comparison_response(
+        self,
+        response: str,
+    ) -> Dict:
+
+        similarities: List[str] = []
+        differences: List[str] = []
+        conclusion = ""
+
+        # ---------------------------------------------------------
+        # Normalize response
+        # ---------------------------------------------------------
+
+        text = response.strip()
+
+        # ---------------------------------------------------------
+        # Extract Similarities section
+        # ---------------------------------------------------------
+
+        similarities_match = re.search(
+            r"\*\*Similarities:\*\*(.*?)(?=\*\*Differences:\*\*|\Z)",
+            text,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+
+        if similarities_match:
+
+            similarities_text = (
+                similarities_match.group(1).strip()
+            )
+
+            similarities = self._extract_numbered_items(
+                similarities_text
+            )
+
+        # ---------------------------------------------------------
+        # Extract Differences section
+        # ---------------------------------------------------------
+
+        differences_match = re.search(
+            r"\*\*Differences:\*\*(.*?)(?=\*\*Final Conclusion:\*\*|\Z)",
+            text,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+
+        if differences_match:
+
+            differences_text = (
+                differences_match.group(1).strip()
+            )
+
+            differences = self._extract_numbered_items(
+                differences_text
+            )
+
+        # ---------------------------------------------------------
+        # Extract Final Conclusion
+        # ---------------------------------------------------------
+
+        conclusion_match = re.search(
+            r"\*\*Final Conclusion:\*\*(.*)$",
+            text,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+
+        if conclusion_match:
+
+            conclusion = (
+                conclusion_match.group(1).strip()
+            )
+
+        # ---------------------------------------------------------
+        # Fallbacks
+        # ---------------------------------------------------------
+
+        if not similarities:
+
+            similarities = [
+                "No structured similarity points were detected."
+            ]
+
+        if not differences:
+
+            differences = [
+                "No structured difference points were detected."
+            ]
+
+        if not conclusion:
+
+            conclusion = (
+                "No separate conclusion was returned "
+                "by the comparison model."
+            )
+
+        return {
+            "similarities": similarities,
+            "differences": differences,
+            "conclusion": conclusion,
+        }
+
+    # =============================================================
+    # EXTRACT NUMBERED ITEMS
+    # =============================================================
+
+    def _extract_numbered_items(
+        self,
+        text: str,
+    ) -> List[str]:
+
+        items = re.findall(
+            r"(?:^|\n)\s*\d+\.\s*(.*?)(?=\n\s*\d+\.|\Z)",
+            text,
+            flags=re.DOTALL,
+        )
+
+        cleaned_items = []
+
+        for item in items:
+
+            cleaned = " ".join(
+                item.split()
+            ).strip()
+
+            if cleaned:
+
+                cleaned_items.append(
+                    cleaned
+                )
+
+        return cleaned_items
 
     # =============================================================
     # COMMON RESPONSE BUILDER

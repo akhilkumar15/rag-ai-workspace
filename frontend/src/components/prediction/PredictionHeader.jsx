@@ -1,110 +1,65 @@
-import {
-  BrainCircuit,
-  History,
-  CheckCircle2,
-} from "lucide-react";
+import { Upload, Clock3 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function PredictionHeader() {
+  const navigate = useNavigate();
+
   return (
-    <header className="flex items-center justify-between gap-6">
+    <div className="prediction-header">
 
-      {/* Left */}
+      {/* Left side */}
 
-      <div className="flex min-w-0 items-center gap-5">
+      <div className="prediction-header-left">
 
-        <div
-          className="
-            flex
-            h-16
-            w-16
-            shrink-0
-            items-center
-            justify-center
-            rounded-2xl
-            border
-            border-violet-500/20
-            bg-violet-500/10
-            shadow-lg
-            shadow-violet-500/10
-          "
-        >
-          <BrainCircuit
-            size={30}
-            className="text-violet-400"
-          />
+        {/* Word Prediction Logo */}
+
+        <div className="prediction-page-logo">
+          <span></span>
         </div>
 
-        <div className="min-w-0">
+        <div className="prediction-header-text">
 
-          <h1 className="text-4xl font-bold tracking-tight text-white">
-            Word Prediction
+          <h1>
+            Word prediction
           </h1>
 
-          <p className="mt-1 max-w-3xl text-base leading-6 text-zinc-400">
-            Predict the next word using retrieved context and
-            Retrieval-Augmented Generation (RAG).
+          <p>
+            Predict the next word using retrieved context and RAG.
           </p>
 
         </div>
 
       </div>
 
-      {/* Right */}
+      {/* Right side */}
 
-      <div className="flex shrink-0 items-center gap-3">
+      <div className="prediction-header-actions">
 
         <button
-          className="
-            flex
-            items-center
-            gap-2
-            rounded-xl
-            border
-            border-zinc-700
-            bg-zinc-900/80
-            px-5
-            py-3
-            text-zinc-300
-            transition-all
-            duration-200
-            hover:border-zinc-600
-            hover:bg-zinc-800
-            hover:text-white
-          "
+          type="button"
+          className="prediction-header-button"
         >
-          <History size={18} />
-
-          <span className="font-medium">
-            View History
-          </span>
+          <Clock3 size={17} />
+          <span>View history</span>
         </button>
 
-        <div
-          className="
-            flex
-            items-center
-            gap-2
-            rounded-xl
-            border
-            border-zinc-700
-            bg-zinc-900/80
-            px-5
-            py-3
-          "
+        <button
+          type="button"
+          className="prediction-header-button"
+          onClick={() => navigate("/upload-documents")}
         >
-          <CheckCircle2
-            size={16}
-            className="text-green-400"
-          />
+          <Upload size={17} />
+          <span>Upload doc</span>
+        </button>
 
-          <span className="font-medium text-white">
-            Ready
-          </span>
+        <div className="prediction-ready">
+          <span className="prediction-ready-dot"></span>
+          <span>Ready</span>
         </div>
 
       </div>
 
-    </header>
+    </div>
   );
 }
 

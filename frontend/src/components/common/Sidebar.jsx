@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+
 import {
   LayoutDashboard,
   Wand2,
@@ -10,15 +11,13 @@ import {
   Activity,
 } from "lucide-react";
 
+
 const workspace = [
   {
     name: "Dashboard",
     path: "/dashboard",
     icon: LayoutDashboard,
   },
-];
-
-const tools = [
   {
     name: "Word Prediction",
     path: "/word-prediction",
@@ -44,13 +43,23 @@ const tools = [
     path: "/retrieval-viewer",
     icon: Search,
   },
+  {
+    name: "Upload Documents",
+    path: "/upload-documents",
+    icon: FileText,
+  },
 ];
 
+
 export default function Sidebar() {
+
   return (
+
     <aside className="sidebar">
 
-      {/* Logo */}
+      {/* =====================================================
+          LOGO
+      ===================================================== */}
 
       <div className="sidebar-logo">
 
@@ -60,7 +69,9 @@ export default function Sidebar() {
 
         <div>
 
-          <h2>RAG AI Workspace</h2>
+          <h2>
+            RAG AI Workspace
+          </h2>
 
           <p>
             Retrieval-Augmented
@@ -72,7 +83,10 @@ export default function Sidebar() {
 
       </div>
 
-      {/* Workspace */}
+
+      {/* =====================================================
+          WORKSPACE
+      ===================================================== */}
 
       <div className="sidebar-section">
 
@@ -80,10 +94,13 @@ export default function Sidebar() {
           WORKSPACE
         </span>
 
+
         {workspace.map((item) => {
+
           const Icon = item.icon;
 
           return (
+
             <NavLink
               key={item.name}
               to={item.path}
@@ -91,46 +108,25 @@ export default function Sidebar() {
                 `sidebar-link ${isActive ? "active" : ""}`
               }
             >
+
               <Icon size={18} />
 
-              <span>{item.name}</span>
+              <span>
+                {item.name}
+              </span>
 
             </NavLink>
+
           );
+
         })}
 
       </div>
 
-      {/* Tools */}
 
-      <div className="sidebar-section">
-
-        <span className="sidebar-heading">
-          TOOLS
-        </span>
-
-        {tools.map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              className={({ isActive }) =>
-                `sidebar-link ${isActive ? "active" : ""}`
-              }
-            >
-              <Icon size={18} />
-
-              <span>{item.name}</span>
-
-            </NavLink>
-          );
-        })}
-
-      </div>
-
-      {/* System */}
+      {/* =====================================================
+          SYSTEM
+      ===================================================== */}
 
       <div className="sidebar-section">
 
@@ -138,21 +134,28 @@ export default function Sidebar() {
           SYSTEM
         </span>
 
+
         <NavLink
           to="/settings"
           className={({ isActive }) =>
             `sidebar-link ${isActive ? "active" : ""}`
           }
         >
+
           <Settings size={18} />
 
-          <span>Settings</span>
+          <span>
+            Settings
+          </span>
 
         </NavLink>
 
       </div>
 
-      {/* Backend Status */}
+
+      {/* =====================================================
+          BACKEND STATUS
+      ===================================================== */}
 
       <div className="sidebar-footer">
 
@@ -169,13 +172,16 @@ export default function Sidebar() {
 
         </div>
 
+
         <small>
           FastAPI + FAISS
         </small>
 
+
         <p>
           All systems operational
         </p>
+
 
         <span className="backend-version">
           v1.0.0
@@ -184,5 +190,7 @@ export default function Sidebar() {
       </div>
 
     </aside>
+
   );
+
 }

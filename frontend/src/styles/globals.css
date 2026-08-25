@@ -1,58 +1,145 @@
 @import "tailwindcss";
 
-/* ----------------------- */
-/* Google Font */
-/* ----------------------- */
-
-
-
-/* ----------------------- */
-/* Theme Variables */
-/* ----------------------- */
+/* =========================================================
+   RAG AI WORKSPACE — GLOBAL DESIGN SYSTEM
+   ========================================================= */
 
 :root {
 
-  --bg-main: #111318;
-  --bg-sidebar: #171A21;
-  --bg-navbar: #171A21;
+  /* -------------------------------------------------------
+     MAIN CONTENT
+     ------------------------------------------------------- */
 
-  --card-dark: #20242E;
-  --card-light: #F4EFE6;
+  --bg-main: #ffffff;
 
-  --border: rgba(255,255,255,.06);
+  --text-primary: #161615;
+  --text-secondary: #77766f;
+  --text-tertiary: #9a9a96;
 
-  --text-primary: #F8FAFC;
-  --text-secondary: #9CA3AF;
 
-  --blue: #4F7CFF;
+  /* -------------------------------------------------------
+     SIDEBAR
+     ------------------------------------------------------- */
 
-  --radius: 16px;
+  --bg-sidebar: #0f0f0e;
+  --sidebar-border: #2a2a28;
+
+  --sidebar-text: #c9c9c4;
+  --sidebar-muted: #77766f;
+
+  --sidebar-active: #0F6E56;
+  --sidebar-active-border: #5DCAA5;
+
+
+  /* -------------------------------------------------------
+     TOPBAR
+     ------------------------------------------------------- */
+
+  --bg-navbar: #ffffff;
+
+
+  /* -------------------------------------------------------
+     CARDS
+     ------------------------------------------------------- */
+
+  --card-light: #ffffff;
+  --card-dark: #ffffff;
+
+  --border: #e2e2df;
+
+  --border-selected: #0F6E56;
+
+
+  /* -------------------------------------------------------
+     TEAL ACCENT
+     ------------------------------------------------------- */
+
+  --accent: #0F6E56;
+  --accent-light: #E1F5EE;
+  --accent-dark: #085041;
+  --accent-mid: #5DCAA5;
+
+
+  /* -------------------------------------------------------
+     SUCCESS / CONFIDENCE
+     ------------------------------------------------------- */
+
+  --success: #3B6D11;
+
+
+  /* -------------------------------------------------------
+     NUMBERED CHIPS
+     ------------------------------------------------------- */
+
+  --chip-bg: #f1efe8;
+  --chip-text: #77766f;
+
+
+  /* -------------------------------------------------------
+     BUTTONS
+     ------------------------------------------------------- */
+
+  --button-primary: #0F6E56;
+  --button-primary-text: #ffffff;
+
+  --button-secondary: #ffffff;
+  --button-secondary-border: #e2e2df;
+  --button-secondary-text: #161615;
+
+
+  /* -------------------------------------------------------
+     STATUS
+     ------------------------------------------------------- */
+
+  --status-bg: #161615;
+  --status-text: #ffffff;
+  --status-dot: #5DCAA5;
+
+
+  /* -------------------------------------------------------
+     SIDEBAR STATUS CARD
+     ------------------------------------------------------- */
+
+  --status-card-bg: #1a1a18;
+  --status-card-label: #5DCAA5;
+  --status-card-text: #9a9a96;
+
+
+  /* -------------------------------------------------------
+     RADIUS
+     ------------------------------------------------------- */
+
+  --radius: 12px;
+
+  --radius-button: 8px;
+
+
+  /* -------------------------------------------------------
+     TRANSITION
+     ------------------------------------------------------- */
 
   --transition: .25s ease;
-
 }
 
-/* ----------------------- */
-/* Reset */
-/* ----------------------- */
+
+/* =========================================================
+   RESET
+   ========================================================= */
 
 * {
-
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-
 }
+
 
 html,
 body,
 #root {
-
   width: 100%;
   height: 100%;
-  overflow: hidden;
-
 }
+
 
 body {
 
@@ -63,83 +150,80 @@ body {
   color: var(--text-primary);
 
   -webkit-font-smoothing: antialiased;
-
 }
 
-/* ----------------------- */
+
+/* =========================================================
+   LINKS
+   ========================================================= */
 
 a {
-
   color: inherit;
   text-decoration: none;
-
 }
+
+
+/* =========================================================
+   FORM ELEMENTS
+   ========================================================= */
 
 button,
 input,
-textarea {
-
+textarea,
+select {
   font-family: inherit;
-
 }
+
 
 button {
-
   cursor: pointer;
   transition: var(--transition);
-
 }
 
-/* ----------------------- */
-/* Scrollbar */
-/* ----------------------- */
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
 
 ::-webkit-scrollbar {
-
   width: 8px;
-
 }
+
 
 ::-webkit-scrollbar-track {
-
   background: transparent;
-
 }
+
 
 ::-webkit-scrollbar-thumb {
-
-  background: #2B313D;
+  background: #d0d0cc;
   border-radius: 999px;
-
 }
+
 
 ::-webkit-scrollbar-thumb:hover {
-
-  background: #3B4252;
-
+  background: #b8b8b3;
 }
 
-/* ----------------------- */
-/* Selection */
-/* ----------------------- */
+
+/* =========================================================
+   TEXT SELECTION
+   ========================================================= */
 
 ::selection {
-
-  background: #4F7CFF;
-  color: white;
-
+  background: #E1F5EE;
+  color: #085041;
 }
 
-/* ----------------------- */
-/* Animation */
-/* ----------------------- */
+
+/* =========================================================
+   GLOBAL TRANSITIONS
+   ========================================================= */
 
 * {
-
   transition:
-      background-color .25s ease,
-      border-color .25s ease,
-      color .25s ease,
-      box-shadow .25s ease;
-
+    background-color .25s ease,
+    border-color .25s ease,
+    color .25s ease,
+    box-shadow .25s ease;
 }

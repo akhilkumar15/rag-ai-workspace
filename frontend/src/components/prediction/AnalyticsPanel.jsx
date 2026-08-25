@@ -7,34 +7,23 @@ import {
   BarChart3,
 } from "lucide-react";
 
-function MetricCard({ icon: Icon, title, value }) {
+function MetricCard({ title, value, confidence = false }) {
   return (
-    <div className="flex min-w-0 items-center gap-4 px-3 py-3">
+    <div className="min-w-0 px-3 py-3">
 
-      {/* Icon */}
+      <p className="text-xs uppercase tracking-wide text-[#9a9a96]">
+        {title}
+      </p>
 
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-800">
-
-        <Icon
-          size={19}
-          className="text-zinc-300"
-        />
-
-      </div>
-
-      {/* Content */}
-
-      <div className="min-w-0">
-
-        <p className="text-xs uppercase tracking-wide text-zinc-500">
-          {title}
-        </p>
-
-        <h3 className="mt-1 truncate text-base font-semibold text-white">
-          {value}
-        </h3>
-
-      </div>
+      <h3
+        className={`mt-1 truncate text-base font-semibold ${
+          confidence
+            ? "text-[#0F6E56]"
+            : "text-[#161615]"
+        }`}
+      >
+        {value}
+      </h3>
 
     </div>
   );
@@ -76,17 +65,17 @@ function AnalyticsPanel({
       };
 
   return (
-    <section className="rounded-3xl border border-zinc-800 bg-[#151922] p-6">
+    <section className="rounded-3xl border border-[#e2e2df] bg-[#ffffff] p-6">
 
       {/* Header */}
 
       <div className="flex items-center justify-between">
 
-        <h2 className="text-2xl font-bold tracking-tight text-white">
+        <h2 className="text-2xl font-bold tracking-tight text-[#161615]">
           Prediction Analytics
         </h2>
 
-        <span className="text-sm text-zinc-500">
+        <span className="text-sm text-[#9a9a96]">
           Live Metrics
         </span>
 
@@ -97,37 +86,32 @@ function AnalyticsPanel({
       <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
 
         <MetricCard
-          icon={Brain}
           title="Embedding Model"
           value={data.embeddingModel}
         />
 
         <MetricCard
-          icon={Clock3}
           title="Retrieval Time"
           value={data.retrievalTime}
         />
 
         <MetricCard
-          icon={Target}
           title="Prediction Method"
           value={data.predictionMethod}
         />
 
         <MetricCard
-          icon={Layers3}
           title="Top-K Chunks"
           value={data.topKChunks}
         />
 
         <MetricCard
-          icon={BarChart3}
           title="Confidence"
           value={data.confidence}
+          confidence
         />
 
         <MetricCard
-          icon={Database}
           title="Total Candidates"
           value={data.totalCandidates}
         />

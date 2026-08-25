@@ -2,11 +2,15 @@
    DASHBOARD LAYOUT
 ===================================================== */
 
-.dashboard-page{
-    min-height:100vh;
-    background:#0A0A0E;
-    padding:24px;
-    color:#f8fafc;
+.dashboard-page {
+    width: calc(100% - 80px);
+    max-width: 1480px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    min-height: 100vh;
+    background: #ffffff;
+    padding: 24px;
+    color: #161615;
 }
 
 .dashboard-container{
@@ -71,7 +75,7 @@
 }
 
 .welcome-date svg{
-    color:#f59e0b;
+    color:#0F6E56;
 }
 
 .date-label{
@@ -169,7 +173,7 @@
 }
 
 .stat-card{
-    background:#14141A;
+    background:#ffffff;
     border:1px solid #242430;
     border-radius:18px;
     padding:18px;
@@ -379,8 +383,8 @@
 
     background:transparent;
 
-    border:1px solid #D9A257;
-    color:#D9A257;
+    border:1px solid #0F6E56;
+    color:#0F6E56;
 
     display:flex;
 
@@ -398,12 +402,10 @@
 
 }
 
-.tool-button:hover{
-
-    background:#D9A257;
-    border-color:#D9A257;
-    color:#0A0A0E;
-
+.tool-button:hover {
+    background: #0F6E56;
+    border-color: #0F6E56;
+    color: #ffffff;
 }
 
 /* =====================================================
@@ -412,7 +414,7 @@
 
 .project-overview{
     margin-top:30px;
-    background:#14141A;
+    background:#ffffff;
     border:1px solid #242430;
     border-radius:18px;
     padding:20px;
@@ -452,7 +454,7 @@ color:#F2F2ED;
 
     background:transparent;
 
-    color:#F59E0B;
+    color:#0F6E56;
 
     cursor:pointer;
 
@@ -461,7 +463,7 @@ color:#F2F2ED;
 
 .architecture-btn:hover{
 
-    background:#F59E0B;
+    background:#0F6E56;
 
     color:#111827;
 
@@ -560,6 +562,6 @@ color:#F2F2ED;
 
 .feature-card:focus-visible,
 .tool-button:focus-visible{
-    outline:2px solid #D9A257;
+    outline:2px solid #0F6E56;
     outline-offset:2px;
 }

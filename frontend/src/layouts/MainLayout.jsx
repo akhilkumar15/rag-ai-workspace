@@ -9,43 +9,14 @@ export default function MainLayout() {
     return (
         <div className="app-shell">
 
-            {/* Simulated Desktop Window */}
-
-            <div className="window-bar">
-
-                <div className="window-left">
-
-                    <div className="window-logo">
-                        A
-                    </div>
-
-                    <span>
-                        RAG AI Workspace
-                    </span>
-
-                </div>
-
-                <div className="window-controls">
-
-                    <button>—</button>
-
-                    <button>□</button>
-
-                    <button>✕</button>
-
-                </div>
-
-            </div>
-
-            {/* Workspace */}
-
             <div className="workspace">
 
                 {/* Sidebar */}
 
                 <Sidebar />
 
-                {/* Main */}
+
+                {/* Main Content */}
 
                 <section className="content-area">
 

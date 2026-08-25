@@ -4,8 +4,9 @@ Ollama LLM
 Implements the BaseLLM interface using Ollama.
 """
 
-import requests
+from __future__ import annotations
 
+import requests
 
 from src.llm.base_llm import BaseLLM
 from config import (
@@ -26,7 +27,11 @@ class OllamaLLM(BaseLLM):
     ) -> None:
 
         self.model = model
-        self.host = host
+        self.host = host.rstrip("/")
+
+    # =========================================================
+    # BASIC GENERATION
+    # =========================================================
 
     def generate(
         self,
@@ -47,17 +52,62 @@ class OllamaLLM(BaseLLM):
             },
         }
 
-        response = requests.post(
-            url,
-            json=payload,
-            timeout=300,
-        )
+        try:
 
-        response.raise_for_status()
+            response = requests.post(
+                url,
+                json=payload,
+                timeout=300,
+            )
 
-        result = response.json()
+            # -------------------------------------------------
+            # Better error reporting
+            # -------------------------------------------------
 
-        return result["response"].strip()
+            if not response.ok:
+
+                try:
+                    error_data = response.json()
+                except Exception:
+                    error_data = response.text
+
+                raise RuntimeError(
+                    f"Ollama request failed "
+                    f"(HTTP {response.status_code}): "
+                    f"{error_data}"
+                )
+
+            result = response.json()
+
+            generated_text = result.get(
+                "response",
+                "",
+            )
+
+            if not generated_text:
+                raise RuntimeError(
+                    "Ollama returned an empty response."
+                )
+
+            return generated_text.strip()
+
+        except requests.exceptions.ConnectionError as exc:
+
+            raise RuntimeError(
+                "Could not connect to Ollama at "
+                f"{self.host}. "
+                "Make sure Ollama is running."
+            ) from exc
+
+        except requests.exceptions.Timeout as exc:
+
+            raise RuntimeError(
+                "Ollama request timed out."
+            ) from exc
+
+    # =========================================================
+    # GENERATION WITH METADATA
+    # =========================================================
 
     def generate_with_metadata(
         self,
@@ -82,54 +132,81 @@ class OllamaLLM(BaseLLM):
             },
         }
 
-        response = requests.post(
-            url,
-            json=payload,
-            timeout=300,
-        )
+        try:
 
-        response.raise_for_status()
+            response = requests.post(
+                url,
+                json=payload,
+                timeout=300,
+            )
 
-        result = response.json()
+            if not response.ok:
 
-        return {
-            "response": result.get(
-                "response",
-                "",
-            ).strip(),
+                try:
+                    error_data = response.json()
+                except Exception:
+                    error_data = response.text
 
-            "model": result.get(
-                "model",
-                self.model,
-            ),
+                raise RuntimeError(
+                    f"Ollama request failed "
+                    f"(HTTP {response.status_code}): "
+                    f"{error_data}"
+                )
 
-            "total_duration": result.get(
-                "total_duration",
-                0,
-            ),
+            result = response.json()
 
-            "load_duration": result.get(
-                "load_duration",
-                0,
-            ),
+            return {
+                "response": result.get(
+                    "response",
+                    "",
+                ).strip(),
 
-            "prompt_eval_count": result.get(
-                "prompt_eval_count",
-                0,
-            ),
+                "model": result.get(
+                    "model",
+                    self.model,
+                ),
 
-            "prompt_eval_duration": result.get(
-                "prompt_eval_duration",
-                0,
-            ),
+                "total_duration": result.get(
+                    "total_duration",
+                    0,
+                ),
 
-            "eval_count": result.get(
-                "eval_count",
-                0,
-            ),
+                "load_duration": result.get(
+                    "load_duration",
+                    0,
+                ),
 
-            "eval_duration": result.get(
-                "eval_duration",
-                0,
-            ),
-        }
+                "prompt_eval_count": result.get(
+                    "prompt_eval_count",
+                    0,
+                ),
+
+                "prompt_eval_duration": result.get(
+                    "prompt_eval_duration",
+                    0,
+                ),
+
+                "eval_count": result.get(
+                    "eval_count",
+                    0,
+                ),
+
+                "eval_duration": result.get(
+                    "eval_duration",
+                    0,
+                ),
+            }
+
+        except requests.exceptions.ConnectionError as exc:
+
+            raise RuntimeError(
+                "Could not connect to Ollama at "
+                f"{self.host}. "
+                "Make sure Ollama is running."
+            ) from exc
+
+        except requests.exceptions.Timeout as exc:
+
+            raise RuntimeError(
+                "Ollama request timed out."
+            ) from exc

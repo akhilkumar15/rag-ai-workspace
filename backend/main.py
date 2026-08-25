@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.routers.qa import router as qa_router
 from backend.routers.summarization import router as summarization_router
 from backend.routers.word_prediction import router as word_prediction_router
+from backend.routers.comparison import router as comparison_router
 
 
 app = FastAPI(
@@ -40,6 +41,7 @@ app.add_middleware(
 app.include_router(word_prediction_router)
 app.include_router(qa_router)
 app.include_router(summarization_router)
+app.include_router(comparison_router)
 
 
 # ---------------------------------------------------

@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   Scale,
   History,
@@ -5,19 +7,128 @@ import {
   FileText,
   X,
   GitCompare,
-  ArrowLeft,
-  ArrowRight,
-  Lock,
   AlertCircle,
-  Lightbulb,
-  Clock3,
-  Layers3,
-  Brain,
-  ShieldCheck,
-  Network,
+  UploadCloud,
+  Pencil,
+  FileCheck2,
 } from "lucide-react";
 
+import useComparison from "../hooks/useComparison";
+
 function ComparisonPage() {
+  const {
+    documentA,
+    documentB,
+    setDocumentA,
+    setDocumentB,
+
+    documentAFile,
+    documentBFile,
+    setDocumentAFile,
+    setDocumentBFile,
+
+    result,
+    loading,
+    error,
+    compare,
+    clear,
+  } = useComparison();
+
+  const [documentAMode, setDocumentAMode] = useState("paste");
+  const [documentBMode, setDocumentBMode] = useState("paste");
+
+  /* =========================================================
+     FILE VALIDATION
+  ========================================================= */
+
+  const handleFileSelect = (event, documentType) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    const allowedTypes = [
+      "application/pdf",
+      "text/plain",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+
+    const allowedExtensions = [".pdf", ".txt", ".docx"];
+
+    const extension = file.name
+      .slice(file.name.lastIndexOf("."))
+      .toLowerCase();
+
+    if (
+      !allowedTypes.includes(file.type) &&
+      !allowedExtensions.includes(extension)
+    ) {
+      alert("Please upload a PDF, TXT, or DOCX file.");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      alert("Maximum file size is 50MB.");
+      event.target.value = "";
+      return;
+    }
+
+    if (documentType === "A") {
+      setDocumentAFile(file);
+      setDocumentAMode("upload");
+    } else {
+      setDocumentBFile(file);
+      setDocumentBMode("upload");
+    }
+  };
+
+  /* =========================================================
+     REMOVE FILE
+  ========================================================= */
+
+  const removeFile = (documentType) => {
+    if (documentType === "A") {
+      setDocumentAFile(null);
+    } else {
+      setDocumentBFile(null);
+    }
+  };
+
+  /* =========================================================
+     CLEAR EVERYTHING
+  ========================================================= */
+
+  const handleClear = () => {
+    clear();
+
+    setDocumentAFile(null);
+    setDocumentBFile(null);
+
+    setDocumentAMode("paste");
+    setDocumentBMode("paste");
+  };
+
+  /* =========================================================
+     VALIDATION
+  ========================================================= */
+
+  const documentAReady =
+    documentAMode === "upload"
+      ? Boolean(documentAFile)
+      : Boolean(documentA.trim());
+
+  const documentBReady =
+    documentBMode === "upload"
+      ? Boolean(documentBFile)
+      : Boolean(documentB.trim());
+
+  const canCompare =
+    documentAReady &&
+    documentBReady &&
+    !loading;
+
   return (
     <div className="comparison-page">
 
@@ -45,7 +156,10 @@ function ComparisonPage() {
 
         <div className="comparison-header-actions">
 
-          <button className="comparison-history-button">
+          <button
+            type="button"
+            className="comparison-history-button"
+          >
             <History size={17} />
             View History
           </button>
@@ -70,529 +184,465 @@ function ComparisonPage() {
 
         <div className="comparison-selection-row">
 
-          {/* DOCUMENT A */}
+          {/* =================================================
+              DOCUMENT A
+          ================================================= */}
 
-          <div className="comparison-document">
+          <div className="comparison-document-input">
 
-            <label>Document A</label>
+            <div className="comparison-document-label">
 
-            <div className="comparison-file-card">
+              <div className="comparison-document-title">
 
-              <div className="comparison-file-icon">
-                <FileText size={20} />
-              </div>
+                <div className="comparison-file-icon">
+                  <FileText size={20} />
+                </div>
 
-              <div className="comparison-file-info">
-
-                <strong>
-                  artificial_intelligence_overview.pdf
-                </strong>
-
-                <span>
-                  PDF&nbsp;&nbsp;•&nbsp;&nbsp;2.45 MB&nbsp;&nbsp;•&nbsp;&nbsp;16 pages
-                </span>
+                <strong>Document A</strong>
 
               </div>
 
-              <button className="comparison-remove-button">
-                <X size={18} />
+            </div>
+
+
+            {/* INPUT MODE BUTTONS */}
+
+            <div className="comparison-input-mode">
+
+              <button
+                type="button"
+                className={`comparison-mode-button ${
+                  documentAMode === "upload" ? "active" : ""
+                }`}
+                onClick={() => setDocumentAMode("upload")}
+              >
+                <UploadCloud size={15} />
+                Upload
+              </button>
+
+              <button
+                type="button"
+                className={`comparison-mode-button ${
+                  documentAMode === "paste" ? "active" : ""
+                }`}
+                onClick={() => setDocumentAMode("paste")}
+              >
+                <Pencil size={15} />
+                Edit
               </button>
 
             </div>
 
+
+            {/* UPLOAD */}
+
+            {documentAMode === "upload" && (
+
+              <label className="comparison-upload-zone">
+
+                <UploadCloud size={24} />
+
+                <strong>
+                  Click to upload Document A
+                </strong>
+
+                <span>
+                  PDF, TXT or DOCX • Max 50MB
+                </span>
+
+                <input
+                  type="file"
+                  accept=".pdf,.txt,.docx,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  onChange={(event) =>
+                    handleFileSelect(event, "A")
+                  }
+                  hidden
+                />
+
+              </label>
+
+            )}
+
+
+            {/* SELECTED FILE */}
+
+            {documentAMode === "upload" && documentAFile && (
+
+              <div className="comparison-selected-file">
+
+                <div className="comparison-selected-file-icon">
+                  <FileCheck2 size={18} />
+                </div>
+
+                <div className="comparison-selected-file-info">
+
+                  <strong>
+                    {documentAFile.name}
+                  </strong>
+
+                  <span>
+                    PDF / TXT / DOCX •{" "}
+                    {(documentAFile.size / 1024).toFixed(1)} KB
+                  </span>
+
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => removeFile("A")}
+                  aria-label="Remove Document A"
+                >
+                  <X size={17} />
+                </button>
+
+              </div>
+
+            )}
+
+
+            {/* PASTE */}
+
+            {documentAMode === "paste" && (
+
+              <textarea
+                className="comparison-content-textarea"
+                value={documentA}
+                onChange={(event) =>
+                  setDocumentA(event.target.value)
+                }
+                placeholder="Enter or paste document A content..."
+                rows={6}
+              />
+
+            )}
+
           </div>
 
 
-          {/* VS */}
+          {/* =================================================
+              VS
+          ================================================= */}
 
           <div className="comparison-vs">
             VS
           </div>
 
 
-          {/* DOCUMENT B */}
+          {/* =================================================
+              DOCUMENT B
+          ================================================= */}
 
-          <div className="comparison-document">
+          <div className="comparison-document-input">
 
-            <label>Document B</label>
+            <div className="comparison-document-label">
 
-            <div className="comparison-file-card">
+              <div className="comparison-document-title">
 
-              <div className="comparison-file-icon">
-                <FileText size={20} />
-              </div>
+                <div className="comparison-file-icon">
+                  <FileText size={20} />
+                </div>
 
-              <div className="comparison-file-info">
-
-                <strong>
-                  machine_learning_fundamentals.pdf
-                </strong>
-
-                <span>
-                  PDF&nbsp;&nbsp;•&nbsp;&nbsp;1.98 MB&nbsp;&nbsp;•&nbsp;&nbsp;14 pages
-                </span>
+                <strong>Document B</strong>
 
               </div>
 
-              <button className="comparison-remove-button">
-                <X size={18} />
+            </div>
+
+
+            {/* INPUT MODE BUTTONS */}
+
+            <div className="comparison-input-mode">
+
+              <button
+                type="button"
+                className={`comparison-mode-button ${
+                  documentBMode === "upload" ? "active" : ""
+                }`}
+                onClick={() => setDocumentBMode("upload")}
+              >
+                <UploadCloud size={15} />
+                Upload
+              </button>
+
+              <button
+                type="button"
+                className={`comparison-mode-button ${
+                  documentBMode === "paste" ? "active" : ""
+                }`}
+                onClick={() => setDocumentBMode("paste")}
+              >
+                <Pencil size={15} />
+                Edit
               </button>
 
             </div>
 
+
+            {/* UPLOAD */}
+
+            {documentBMode === "upload" && (
+
+              <label className="comparison-upload-zone">
+
+                <UploadCloud size={24} />
+
+                <strong>
+                  Click to upload Document B
+                </strong>
+
+                <span>
+                  PDF, TXT or DOCX • Max 50MB
+                </span>
+
+                <input
+                  type="file"
+                  accept=".pdf,.txt,.docx,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  onChange={(event) =>
+                    handleFileSelect(event, "B")
+                  }
+                  hidden
+                />
+
+              </label>
+
+            )}
+
+
+            {/* SELECTED FILE */}
+
+            {documentBMode === "upload" && documentBFile && (
+
+              <div className="comparison-selected-file">
+
+                <div className="comparison-selected-file-icon">
+                  <FileCheck2 size={18} />
+                </div>
+
+                <div className="comparison-selected-file-info">
+
+                  <strong>
+                    {documentBFile.name}
+                  </strong>
+
+                  <span>
+                    PDF / TXT / DOCX •{" "}
+                    {(documentBFile.size / 1024).toFixed(1)} KB
+                  </span>
+
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => removeFile("B")}
+                  aria-label="Remove Document B"
+                >
+                  <X size={17} />
+                </button>
+
+              </div>
+
+            )}
+
+
+            {/* PASTE */}
+
+            {documentBMode === "paste" && (
+
+              <textarea
+                className="comparison-content-textarea"
+                value={documentB}
+                onChange={(event) =>
+                  setDocumentB(event.target.value)
+                }
+                placeholder="Enter or paste document B content..."
+                rows={6}
+              />
+
+            )}
+
           </div>
 
 
-          {/* ACTIONS */}
+          {/* =================================================
+              ACTIONS
+          ================================================= */}
 
           <div className="comparison-selection-actions">
 
-            <button className="comparison-button comparison-button-primary">
+            <button
+              type="button"
+              className="comparison-button comparison-button-primary"
+              onClick={compare}
+              disabled={!canCompare}
+            >
+
               <GitCompare size={17} />
-              Compare Documents
+
+              {loading
+                ? "Comparing..."
+                : "Compare Documents"}
+
             </button>
 
-            <button className="comparison-button comparison-button-secondary">
+
+            <button
+              type="button"
+              className="comparison-button comparison-button-secondary"
+              onClick={handleClear}
+            >
+
               <X size={17} />
+
               Clear
+
             </button>
 
           </div>
 
         </div>
 
+
         <p className="comparison-helper">
-          Select two documents to see a detailed comparison of content,
-          similarities, and differences.
+
+          Choose how to provide each document:
+          upload a PDF/TXT/DOCX file or enter/paste its content.
+
         </p>
+
+
+        {/* ERROR */}
+
+        {error && (
+
+          <div className="comparison-error">
+
+            <AlertCircle size={16} />
+
+            <span>{error}</span>
+
+          </div>
+
+        )}
 
       </section>
 
 
       {/* =====================================================
-          MAIN COMPARISON AREA
+          ACTUAL COMPARISON RESULT
+          ONLY APPEARS AFTER SUCCESSFUL COMPARISON
       ===================================================== */}
 
-      <section className="comparison-main-grid">
+      {result && (
 
-        {/* =================================================
-            LEFT COLUMN
-        ================================================= */}
+        <section className="comparison-result-card">
 
-        <div className="comparison-left-column">
+          <div className="comparison-result-header">
 
-          {/* OVERVIEW */}
+            <div>
 
-          <section className="comparison-overview-card">
-
-            <h2>Comparison Overview</h2>
-
-            <div className="comparison-overview-grid">
-
-              <div className="overview-stat overview-stat-success">
-
-                <div className="overview-stat-icon">
-                  <Lock size={18} />
-                </div>
-
-                <div>
-                  <span>Similarities</span>
-                  <strong>68%</strong>
-                  <small>High similarity</small>
-                </div>
-
-              </div>
-
-
-              <div className="overview-stat overview-stat-warning">
-
-                <div className="overview-stat-icon">
-                  <GitCompare size={18} />
-                </div>
-
-                <div>
-                  <span>Differences</span>
-                  <strong>22%</strong>
-                  <small>Moderate differences</small>
-                </div>
-
-              </div>
-
-
-              <div className="overview-stat overview-stat-danger">
-
-                <div className="overview-stat-icon">
-                  <X size={18} />
-                </div>
-
-                <div>
-                  <span>Unique Content</span>
-                  <strong>10%</strong>
-                  <small>Distinct information</small>
-                </div>
-
-              </div>
-
-            </div>
-
-          </section>
-
-
-          {/* SIDE BY SIDE */}
-
-          <section className="side-by-side-card">
-
-            <div className="comparison-section-header">
+              <span className="comparison-result-label">
+                Comparison Result
+              </span>
 
               <h2>
-                Side-by-Side Comparison
-                <span>(Top Matches)</span>
+                Document Analysis
               </h2>
 
             </div>
 
-
-            <div className="comparison-tabs">
-
-              <button className="comparison-tab active">
-                All
-              </button>
-
-              <button className="comparison-tab">
-                Similar
-              </button>
-
-              <button className="comparison-tab">
-                Different
-              </button>
-
-              <button className="comparison-tab">
-                Unique to A
-              </button>
-
-              <button className="comparison-tab">
-                Unique to B
-              </button>
-
+            <div className="comparison-result-status">
+              <CheckCircle2 size={16} />
+              Completed
             </div>
 
+          </div>
 
-            <div className="comparison-table">
 
-              <div className="comparison-table-header">
+          {/* DOCUMENT INFORMATION */}
 
-                <div>
-                  Document A:
-                  artificial_intelligence_overview.pdf
-                </div>
+          {result.documents && (
 
-                <div>Comparison</div>
+            <div className="comparison-result-documents">
 
-                <div>
-                  Document B:
-                  machine_learning_fundamentals.pdf
-                </div>
+              <div className="comparison-result-document">
+
+                <span>Document A</span>
+
+                <strong>
+                  {result.documents.document_a?.file_name ||
+                    "Text Input"}
+                </strong>
+
+                {result.documents.document_a?.file_type && (
+                  <small>
+                    {result.documents.document_a.file_type}
+                    {result.documents.document_a.total_pages
+                      ? ` • ${result.documents.document_a.total_pages} page${
+                          result.documents.document_a.total_pages > 1
+                            ? "s"
+                            : ""
+                        }`
+                      : ""}
+                  </small>
+                )}
 
               </div>
 
 
-              <ComparisonRow
-                left="Artificial Intelligence (AI) is the simulation of human intelligence in machines that are programmed to think, learn, and make decisions like humans."
-                status="Similar"
-                right="Machine Learning (ML) is a subset of AI that enables systems to learn from data and improve performance without being explicitly programmed."
-                type="similar"
-              />
-
-              <ComparisonRow
-                left="AI encompasses technologies such as machine learning, natural language processing, computer vision, and robotics."
-                status="Similar"
-                right="ML focuses on algorithms that learn patterns from data, such as regression, classification, clustering, and reinforcement learning."
-                type="similar"
-              />
-
-              <ComparisonRow
-                left="The goal of AI is to create intelligent systems that can adapt, reason, and solve complex real-world problems."
-                status="Different"
-                right="The goal of ML is to build models that can make accurate predictions or decisions based on data."
-                type="different"
-              />
-
-              <ComparisonRow
-                left="Deep learning is a subset of machine learning based on artificial neural networks with multiple layers."
-                status="Unique to A"
-                right="Supervised learning uses labeled data to train models, while unsupervised learning finds hidden patterns."
-                type="unique"
-              />
-
-              <ComparisonRow
-                left="AI applications include autonomous vehicles, chatbots, recommendation systems, and medical diagnosis."
-                status="Similar"
-                right="ML applications include spam detection, image classification, fraud detection, and predictive analytics."
-                type="similar"
-              />
-
-            </div>
-
-
-            <button className="comparison-report-button">
-              View Full Comparison Report
-            </button>
-
-          </section>
-
-        </div>
-
-
-        {/* =================================================
-            RIGHT COLUMN
-        ================================================= */}
-
-        <div className="comparison-right-column">
-
-          {/* KEY DIFFERENCES */}
-
-          <section className="key-differences-card">
-
-            <h2>Key Differences</h2>
-
-            <DifferenceItem
-              icon={<X size={18} />}
-              text="Document A focuses more on the broad overview of AI concepts and real-world applications."
-              label="From A"
-              type="danger"
-            />
-
-            <DifferenceItem
-              icon={<X size={18} />}
-              text="Document B provides deeper coverage of machine learning algorithms and model training techniques."
-              label="From B"
-              type="danger"
-            />
-
-            <DifferenceItem
-              icon={<GitCompare size={18} />}
-              text="Both documents discuss AI/ML concepts, but from different depth and perspectives."
-              label="Common"
-              type="warning"
-            />
-
-          </section>
-
-
-          {/* UNIQUE CONTENT */}
-
-          <section className="unique-content-card">
-
-            <h2>Unique Content</h2>
-
-            <div className="unique-content-item">
-
-              <div className="unique-content-icon">
-                A
+              <div className="comparison-result-vs">
+                VS
               </div>
 
-              <p>
-                Deep learning, neural networks, and AI applications
-                in autonomous systems.
-              </p>
 
-              <span>2 pages</span>
+              <div className="comparison-result-document">
 
-            </div>
+                <span>Document B</span>
 
+                <strong>
+                  {result.documents.document_b?.file_name ||
+                    "Text Input"}
+                </strong>
 
-            <div className="unique-content-item">
+                {result.documents.document_b?.file_type && (
+                  <small>
+                    {result.documents.document_b.file_type}
+                    {result.documents.document_b.total_pages
+                      ? ` • ${result.documents.document_b.total_pages} page${
+                          result.documents.document_b.total_pages > 1
+                            ? "s"
+                            : ""
+                        }`
+                      : ""}
+                  </small>
+                )}
 
-              <div className="unique-content-icon">
-                B
               </div>
 
-              <p>
-                Supervised vs unsupervised learning, model evaluation
-                metrics, and training pipelines.
-              </p>
+            </div>
 
-              <span>3 pages</span>
+          )}
+
+
+          {/* ACTUAL BACKEND RESPONSE */}
+
+          <div className="comparison-result-content">
+
+            <h3>AI Comparison</h3>
+
+            <div className="comparison-result-text">
+
+              {result.response || "No comparison result returned."}
 
             </div>
 
+          </div>
 
-            <button className="unique-content-button">
-              View All Unique Content
-            </button>
+        </section>
 
-          </section>
-
-        </div>
-
-      </section>
-
-
-      {/* =====================================================
-          ANALYTICS
-      ===================================================== */}
-
-      <section className="comparison-analytics-card">
-
-        <h2>Comparison Analytics</h2>
-
-        <div className="comparison-analytics-grid">
-
-          <ComparisonMetric
-            icon={<Clock3 size={18} />}
-            label="Comparison Time"
-            value="1.78 s"
-          />
-
-          <ComparisonMetric
-            icon={<Layers3 size={18} />}
-            label="Total Chunks Compared"
-            value="254"
-          />
-
-          <ComparisonMetric
-            icon={<GitCompare size={18} />}
-            label="Similar Chunks"
-            value="173 (68%)"
-            type="success"
-          />
-
-          <ComparisonMetric
-            icon={<GitCompare size={18} />}
-            label="Different Chunks"
-            value="56 (22%)"
-            type="warning"
-          />
-
-          <ComparisonMetric
-            icon={<FileText size={18} />}
-            label="Unique to A"
-            value="12 (5%)"
-          />
-
-          <ComparisonMetric
-            icon={<FileText size={18} />}
-            label="Unique to B"
-            value="13 (5%)"
-          />
-
-          <ComparisonMetric
-            icon={<Brain size={18} />}
-            label="Model Used"
-            value="MiniLM-L6-v2"
-          />
-
-          <ComparisonMetric
-            icon={<Network size={18} />}
-            label="Top K"
-            value="5"
-          />
-
-          <ComparisonMetric
-            icon={<ShieldCheck size={18} />}
-            label="Confidence Score"
-            value="91%"
-            type="success"
-          />
-
-        </div>
-
-        <div className="comparison-tip">
-          <Lightbulb size={18} />
-          <span>
-            Tip: Higher similarity indicates more overlapping content.
-            Click on any section to view detailed passages and sources.
-          </span>
-        </div>
-
-      </section>
+      )}
 
     </div>
   );
 }
-
-
-/* =========================================================
-   COMPARISON ROW
-========================================================= */
-
-function ComparisonRow({
-  left,
-  status,
-  right,
-  type,
-}) {
-  return (
-    <div className="comparison-table-row">
-
-      <div>{left}</div>
-
-      <div>
-        <span className={`comparison-status ${type}`}>
-          {status}
-        </span>
-      </div>
-
-      <div>{right}</div>
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   DIFFERENCE ITEM
-========================================================= */
-
-function DifferenceItem({
-  icon,
-  text,
-  label,
-  type,
-}) {
-  return (
-    <div className="difference-item">
-
-      <div className={`difference-icon ${type}`}>
-        {icon}
-      </div>
-
-      <p>{text}</p>
-
-      <span>{label}</span>
-
-    </div>
-  );
-}
-
-
-/* =========================================================
-   ANALYTICS METRIC
-========================================================= */
-
-function ComparisonMetric({
-  icon,
-  label,
-  value,
-  type = "",
-}) {
-  return (
-    <div className="comparison-metric">
-
-      <div className="comparison-metric-icon">
-        {icon}
-      </div>
-
-      <div>
-        <span>{label}</span>
-        <strong className={type}>
-          {value}
-        </strong>
-      </div>
-
-    </div>
-  );
-}
-
 
 export default ComparisonPage;
