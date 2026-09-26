@@ -14,20 +14,24 @@ function PredictionInput({
   const handleSubmit = () => {
     const trimmedText = text.trim();
 
-    if (!trimmedText || loading) return;
+    if (!trimmedText || loading) {
+      return;
+    }
 
     onPredict(trimmedText);
   };
 
   const handleClear = () => {
-    if (loading) return;
+    if (loading) {
+      return;
+    }
 
     setText("");
     onClear?.();
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
       handleSubmit();
     }
   };
@@ -35,29 +39,37 @@ function PredictionInput({
   return (
     <section className="prediction-input-card">
 
-      {/* Header */}
+      {/* =====================================================
+          INPUT TITLE
+      ===================================================== */}
 
       <h2 className="prediction-input-title">
-        Input Phrase
+        Input phrase
       </h2>
 
 
-      {/* Input + Buttons */}
+      {/* =====================================================
+          INPUT + ACTIONS
+      ===================================================== */}
 
       <div className="prediction-input-row">
 
         <input
           type="text"
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(event) => setText(event.target.value)}
           onKeyDown={handleKeyDown}
           disabled={loading}
           placeholder="Artificial Intelligence is..."
           className="prediction-input-field"
+          aria-label="Input phrase"
         />
 
 
+        {/* Predict */}
+
         <button
+          type="button"
           onClick={handleSubmit}
           disabled={loading}
           className="prediction-button prediction-button-primary"
@@ -70,32 +82,29 @@ function PredictionInput({
         </button>
 
 
+        {/* Clear */}
+
         <button
+          type="button"
           onClick={handleClear}
           disabled={loading}
           className="prediction-button prediction-button-secondary"
         >
           <RotateCcw size={18} />
 
-          <span>
-            Clear
-          </span>
+          <span>Clear</span>
         </button>
 
       </div>
 
 
-      {/* Helper */}
+      {/* =====================================================
+          HELPER TEXT
+      ===================================================== */}
 
       <div className="prediction-input-helper">
-
-        Press{" "}
-        <span>
-          Enter
-        </span>{" "}
-        to predict, or click a predicted word below to continue
-        generating suggestions.
-
+        <span>Press Enter</span>{" "}
+        to predict&nbsp; · &nbsp;Click a predicted word below to continue
       </div>
 
     </section>

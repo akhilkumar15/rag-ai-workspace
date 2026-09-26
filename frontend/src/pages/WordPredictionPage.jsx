@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import PredictionHeader from "../components/prediction/PredictionHeader";
 import PredictionInput from "../components/prediction/PredictionInput";
 import PredictionGrid from "../components/prediction/PredictionGrid";
@@ -6,15 +8,16 @@ import AnalyticsPanel from "../components/prediction/AnalyticsPanel";
 
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import ErrorMessage from "../components/common/ErrorMessage";
+import HistoryDrawer from "../components/common/HistoryDrawer";
 
 import usePrediction from "../hooks/usePrediction";
+import useHistory from "../hooks/useHistory";
+
 
 /*
 |--------------------------------------------------------------------------
-| TEMPORARY SAMPLE DATA
+| APPROVED FALLBACK DATA
 |--------------------------------------------------------------------------
-| Replace with live API response from usePrediction() when backend is
-| fully connected to the frontend prediction flow.
 */
 
 const defaultPredictions = [
@@ -36,15 +39,17 @@ const sampleContext = [
 ];
 
 const sampleAnalytics = {
-  embeddingModel: "all-MiniLM-L6-v2",
+  embeddingModel: "MiniLM-L6-v2",
   retrievalTime: "42 ms",
   predictionMethod: "RAG + Regex",
   topKChunks: "5",
   confidence: "91%",
-  totalCandidates: "18",
+  totalCandidates: "32",
 };
 
+
 function WordPredictionPage() {
+
   const {
     predictions,
     context,
@@ -54,47 +59,126 @@ function WordPredictionPage() {
     reset,
   } = usePrediction();
 
-  /*
-   * Keep the approved sample predictions visible when the API has not
-   * returned predictions yet.
-   */
+
+  // ---------------------------------------------------------
+  // HISTORY
+  // ---------------------------------------------------------
+
+  const {
+    history,
+    saveHistory,
+    clearHistory,
+  } = useHistory("rag_history_word_prediction");
+
+
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+
+  // ---------------------------------------------------------
+  // PREDICT
+  // ---------------------------------------------------------
+
+  const handlePredict = async (text) => {
+
+    const value = text?.trim();
+
+    if (!value) {
+      return;
+    }
+
+    await predict(value);
+
+    saveHistory({
+      title: value,
+      query: value,
+      text: value,
+    });
+  };
+
+
+  // ---------------------------------------------------------
+  // SELECT HISTORY
+  // ---------------------------------------------------------
+
+  const handleHistorySelect = async (item) => {
+
+    setHistoryOpen(false);
+
+    const query =
+      item.query ||
+      item.text ||
+      item.title;
+
+    if (!query) {
+      return;
+    }
+
+    /*
+     * Re-run the selected prediction.
+     *
+     * This gives the history item an actual dynamic
+     * behavior instead of only displaying old text.
+     */
+
+    await predict(query);
+  };
+
+
+  // ---------------------------------------------------------
+  // DISPLAY DATA
+  // ---------------------------------------------------------
+
   const displayPredictions =
     predictions && predictions.length > 0
       ? predictions
       : defaultPredictions;
+
 
   const displayContext =
     context && context.length > 0
       ? context
       : sampleContext;
 
+
+  // ---------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------
+
   return (
     <main className="prediction-page">
 
+
       {/* =====================================================
-          HEADER
+          PAGE HEADER
       ===================================================== */}
 
       <div className="prediction-header-wrap">
-        <PredictionHeader />
+
+        <PredictionHeader
+          onHistoryClick={() => setHistoryOpen(true)}
+          historyCount={history.length}
+        />
+
       </div>
 
 
       {/* =====================================================
-          INPUT
+          INPUT PHRASE
       ===================================================== */}
 
       <div className="prediction-input-wrap">
+
         <PredictionInput
-          onPredict={predict}
+          onPredict={handlePredict}
           onClear={reset}
           loading={loading}
         />
+
       </div>
 
 
       {/* =====================================================
-          LOADING / ERROR
+          STATUS
       ===================================================== */}
 
       {loading && (
@@ -103,9 +187,12 @@ function WordPredictionPage() {
         </div>
       )}
 
+
       {error && (
         <div className="prediction-status">
-          <ErrorMessage message={error} />
+          <ErrorMessage
+            message={error}
+          />
         </div>
       )}
 
@@ -129,12 +216,27 @@ function WordPredictionPage() {
 
 
       {/* =====================================================
-          ANALYTICS
+          PREDICTION ANALYTICS
       ===================================================== */}
 
       <AnalyticsPanel
         analytics={sampleAnalytics}
         useSampleData={true}
+      />
+
+
+      {/* =====================================================
+          HISTORY DRAWER
+      ===================================================== */}
+
+      <HistoryDrawer
+        open={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        title="Word Prediction History"
+        subtitle="Your previous prediction phrases"
+        items={history}
+        onSelect={handleHistorySelect}
+        onClear={clearHistory}
       />
 
     </main>

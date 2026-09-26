@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   FileText,
@@ -20,6 +20,9 @@ import {
 } from "lucide-react";
 
 import useSummary from "../hooks/useSummary";
+import useHistory from "../hooks/useHistory";
+import HistoryDrawer from "../components/common/HistoryDrawer";
+
 
 function formatFileSize(bytes) {
   if (!bytes || bytes <= 0) {
@@ -51,6 +54,44 @@ function SummarizationPage() {
   } = useSummary();
 
   const fileInputRef = useRef(null);
+
+  // =========================================================
+  // HISTORY
+  // =========================================================
+
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+  const {
+    history,
+    saveHistory,
+    clearHistory,
+  } = useHistory("rag_history_summarization");
+
+
+  // =========================================================
+  // SAVE SUCCESSFUL SUMMARY TO HISTORY
+  // =========================================================
+
+  useEffect(() => {
+
+    if (!result?.response || !file) {
+      return;
+    }
+
+    saveHistory({
+      title: file.name,
+      query: file.name,
+      fileName: file.name,
+      fileType:
+        file.name
+          .split(".")
+          .pop()
+          ?.toUpperCase() || "",
+      summary: result.response,
+      result,
+    });
+
+  }, [result, file, saveHistory]);
 
 
   // =========================================================
@@ -151,15 +192,39 @@ function SummarizationPage() {
     }
 
     try {
+
       await navigator.clipboard.writeText(
         result.response
       );
+
     } catch (copyError) {
+
       console.error(
         "Copy failed:",
         copyError
       );
+
     }
+  };
+
+
+  // =========================================================
+  // HISTORY SELECT
+  // =========================================================
+
+  const handleHistorySelect = (item) => {
+
+    if (!item) {
+      return;
+    }
+
+    setHistoryOpen(false);
+
+    console.log(
+      "Selected summarization history:",
+      item
+    );
+
   };
 
 
@@ -206,6 +271,7 @@ function SummarizationPage() {
 
 
   return (
+
     <main className="summarization-page">
 
       {/* =====================================================
@@ -221,25 +287,55 @@ function SummarizationPage() {
           </div>
 
           <div>
-            <h1>Summarization</h1>
+
+            <h1>
+              Summarization
+            </h1>
 
             <p>
               Upload a document and get an AI-generated summary.
             </p>
+
           </div>
 
         </div>
 
+
         <div className="summarization-header-actions">
 
-          <button className="summarization-history-button">
+          {/* =================================================
+              VIEW HISTORY
+          ================================================= */}
+
+          <button
+            type="button"
+            className="summarization-history-button"
+            onClick={() => setHistoryOpen(true)}
+          >
+
             <History size={18} />
-            <span>View History</span>
+
+            <span>
+              View History
+            </span>
+
+            {history.length > 0 && (
+              <span className="summarization-history-count">
+                {history.length}
+              </span>
+            )}
+
           </button>
 
+
           <div className="summarization-ready-status">
+
             <CheckCircle2 size={16} />
-            <span>Ready</span>
+
+            <span>
+              Ready
+            </span>
+
           </div>
 
         </div>
@@ -253,7 +349,10 @@ function SummarizationPage() {
 
       <section className="summarization-upload-card">
 
-        <h2>Upload Document</h2>
+        <h2>
+          Upload Document
+        </h2>
+
 
         <div className="summarization-upload-row">
 
@@ -283,7 +382,9 @@ function SummarizationPage() {
                 event.key === "Enter" ||
                 event.key === " "
               ) {
+
                 handleBrowse();
+
               }
 
             }}
@@ -294,8 +395,13 @@ function SummarizationPage() {
             <div>
 
               <p>
+
                 Drag and drop your file here, or{" "}
-                <span>click to browse</span>
+
+                <span>
+                  click to browse
+                </span>
+
               </p>
 
               <small>
@@ -314,8 +420,11 @@ function SummarizationPage() {
             <div className="summarization-file-card">
 
               <div className="summarization-file-icon">
+
                 <FileText size={22} />
+
               </div>
+
 
               <div className="summarization-file-info">
 
@@ -324,22 +433,29 @@ function SummarizationPage() {
                 </strong>
 
                 <span>
+
                   {file.name
                     .split(".")
                     .pop()
                     .toUpperCase()}
+
                   &nbsp; • &nbsp;
+
                   {formatFileSize(file.size)}
+
                 </span>
 
               </div>
+
 
               <button
                 className="summarization-remove-file"
                 aria-label="Remove file"
                 onClick={handleClear}
               >
+
                 <X size={20} />
+
               </button>
 
             </div>
@@ -360,12 +476,15 @@ function SummarizationPage() {
               <Sparkles size={18} />
 
               <span>
+
                 {loading
                   ? "Generating..."
                   : "Generate Summary"}
+
               </span>
 
             </button>
+
 
             <button
               className="summarization-clear-button"
@@ -375,7 +494,9 @@ function SummarizationPage() {
 
               <RotateCcw size={18} />
 
-              <span>Clear</span>
+              <span>
+                Clear
+              </span>
 
             </button>
 
@@ -383,9 +504,12 @@ function SummarizationPage() {
 
         </div>
 
+
         <p className="summarization-upload-helper">
+
           {error ||
             "The document will be processed and summarized using AI."}
+
         </p>
 
       </section>
@@ -401,7 +525,10 @@ function SummarizationPage() {
 
         <article className="summary-card">
 
-          <h2>Summary</h2>
+          <h2>
+            Summary
+          </h2>
+
 
           <div className="summary-content">
 
@@ -422,6 +549,7 @@ function SummarizationPage() {
 
           </div>
 
+
           <div className="summary-footer">
 
             <button
@@ -430,8 +558,11 @@ function SummarizationPage() {
               onClick={handleCopy}
               disabled={!summaryText}
             >
+
               <Copy size={18} />
+
             </button>
+
 
             <div className="summary-meta">
 
@@ -439,11 +570,18 @@ function SummarizationPage() {
                 {summaryWords}
               </span>
 
-              <span>•</span>
+              <span>
+                •
+              </span>
 
               <span>
+
                 Confidence:
-                <strong>{confidence}</strong>
+
+                <strong>
+                  {confidence}
+                </strong>
+
               </span>
 
             </div>
@@ -457,43 +595,75 @@ function SummarizationPage() {
 
         <article className="document-details-card">
 
-          <h2>Document Details</h2>
+          <h2>
+            Document Details
+          </h2>
+
 
           <div className="document-details-list">
 
             <div className="document-detail-row">
-              <span>File Name</span>
+
+              <span>
+                File Name
+              </span>
+
               <strong>
                 {documentData.file_name || "—"}
               </strong>
+
             </div>
 
+
             <div className="document-detail-row">
-              <span>File Type</span>
+
+              <span>
+                File Type
+              </span>
+
               <strong>
                 {documentData.file_type || "—"}
               </strong>
+
             </div>
 
+
             <div className="document-detail-row">
-              <span>File Size</span>
+
+              <span>
+                File Size
+              </span>
+
               <strong>
                 {formatFileSize(documentData.file_size)}
               </strong>
+
             </div>
 
+
             <div className="document-detail-row">
-              <span>Total Pages</span>
+
+              <span>
+                Total Pages
+              </span>
+
               <strong>
                 {documentData.total_pages ?? "—"}
               </strong>
+
             </div>
 
+
             <div className="document-detail-row">
-              <span>Uploaded On</span>
+
+              <span>
+                Uploaded On
+              </span>
+
               <strong>
                 {documentData.uploaded_on || "—"}
               </strong>
+
             </div>
 
           </div>
@@ -503,40 +673,62 @@ function SummarizationPage() {
 
           <div className="summary-statistics">
 
-            <h3>Summary Statistics</h3>
+            <h3>
+              Summary Statistics
+            </h3>
+
 
             <div className="summary-stat-grid">
 
               <div className="summary-stat">
-                <span>Processing Time</span>
+
+                <span>
+                  Processing Time
+                </span>
 
                 <strong className="stat-success">
                   {processingTime}
                 </strong>
+
               </div>
 
+
               <div className="summary-stat">
-                <span>Tokens Used</span>
+
+                <span>
+                  Tokens Used
+                </span>
 
                 <strong>
                   {tokensUsed}
                 </strong>
+
               </div>
 
+
               <div className="summary-stat">
-                <span>Chunks Used</span>
+
+                <span>
+                  Chunks Used
+                </span>
 
                 <strong>
                   {chunksUsed}
                 </strong>
+
               </div>
 
+
               <div className="summary-stat">
-                <span>Summary Length</span>
+
+                <span>
+                  Summary Length
+                </span>
 
                 <strong>
                   {summaryWords}
                 </strong>
+
               </div>
 
             </div>
@@ -556,100 +748,145 @@ function SummarizationPage() {
 
         <div className="analytics-header">
 
-          <h2>Summarization Analytics</h2>
+          <h2>
+            Summarization Analytics
+          </h2>
 
         </div>
+
 
         <div className="summarization-analytics-grid">
 
           <div className="summary-analytics-item">
+
             <BrainCircuit size={22} />
 
             <div>
-              <span>Embedding Model</span>
+
+              <span>
+                Embedding Model
+              </span>
 
               <strong>
                 {embeddingModel}
               </strong>
+
             </div>
+
           </div>
 
 
           <div className="summary-analytics-item">
+
             <Clock3 size={22} />
 
             <div>
-              <span>Processing Time</span>
+
+              <span>
+                Processing Time
+              </span>
 
               <strong>
                 {processingTime}
               </strong>
+
             </div>
+
           </div>
 
 
           <div className="summary-analytics-item">
+
             <Cpu size={22} />
 
             <div>
-              <span>LLM Model</span>
+
+              <span>
+                LLM Model
+              </span>
 
               <strong>
                 {llmModel}
               </strong>
+
             </div>
+
           </div>
 
 
           <div className="summary-analytics-item">
+
             <FileCheck2 size={22} />
 
             <div>
-              <span>Summary Length</span>
+
+              <span>
+                Summary Length
+              </span>
 
               <strong>
                 {summaryWords}
               </strong>
+
             </div>
+
           </div>
 
 
           <div className="summary-analytics-item">
+
             <ShieldCheck size={22} />
 
             <div>
-              <span>Confidence (Top 1)</span>
+
+              <span>
+                Confidence (Top 1)
+              </span>
 
               <strong className="stat-success">
                 {confidence}
               </strong>
+
             </div>
+
           </div>
 
 
           <div className="summary-analytics-item">
+
             <Database size={22} />
 
             <div>
-              <span>Tokens Used</span>
+
+              <span>
+                Tokens Used
+              </span>
 
               <strong>
                 {tokensUsed}
               </strong>
+
             </div>
+
           </div>
 
 
           <div className="summary-analytics-item">
+
             <Layers3 size={22} />
 
             <div>
-              <span>Chunks Used</span>
+
+              <span>
+                Chunks Used
+              </span>
 
               <strong>
                 {chunksUsed}
               </strong>
+
             </div>
+
           </div>
 
         </div>
@@ -662,13 +899,35 @@ function SummarizationPage() {
           <Lightbulb size={18} />
 
           <span>
-            <strong>Tip:</strong> Longer documents may take more time to
+
+            <strong>
+              Tip:
+            </strong>{" "}
+
+            Longer documents may take more time to
             process. AI summaries capture key information and main points.
+
           </span>
 
         </div>
 
       </section>
+
+
+      {/* =====================================================
+          HISTORY DRAWER
+      ===================================================== */}
+
+      <HistoryDrawer
+        open={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        title="Summarization History"
+        subtitle="Your previous document summaries"
+        items={history}
+        onSelect={handleHistorySelect}
+        onClear={clearHistory}
+      />
+
 
     </main>
   );

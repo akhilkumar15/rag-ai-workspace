@@ -149,14 +149,14 @@
 .project-overview h2{
     font-size:20px;
     font-family:"Playfair Display",serif;
-    color:#F2F2ED;
+    color:#161615;
     font-weight:700;
     margin-bottom:8px;
 }
 
 .tools-section p,
 .project-overview p{
-    color:#9ca3af;
+    color:#536273;
     line-height:1.7;
 }
 
@@ -174,17 +174,24 @@
 
 .stat-card{
     background:#ffffff;
-    border:1px solid #242430;
+
+    border:1px solid #DDEBE5;
+
     border-radius:18px;
+
     padding:18px;
+
     transition:.25s;
+
     cursor:pointer;
 }
 
 .stat-card:hover{
     transform:translateY(-4px);
-    border-color:#3A4558;
-    box-shadow:0 14px 30px rgba(0,0,0,.25);
+
+    border-color:#BFDCD1;
+
+    box-shadow:0 14px 30px rgba(0,0,0,.10);
 }
 
 .stat-top{
@@ -197,12 +204,16 @@
 .stat-icon{
     width:36px;
     height:36px;
+
     border-radius:12px;
-    background:#1B2230;
+
+    background:#E1F5EE;
+
     display:flex;
     justify-content:center;
     align-items:center;
-    color:#8B5CF6;
+
+    color:#0F6E56;
 }
 
 .trend-icon{
@@ -212,21 +223,28 @@
 .stat-title{
     font-size:12px;
     letter-spacing:1px;
-    color:#8E97A6;
+
+    color:#6F7F91;
+
     text-transform:uppercase;
+
     margin-bottom:12px;
 }
 
 .stat-value{
     font-family:"Playfair Display",serif;
+
     font-size:24px;
-    color:#F8F8F8;
+
+    color:#161615;
+
     margin-bottom:10px;
 }
 
 .stat-subtitle{
     font-size:14px;
-    color:#9AA3B1;
+
+    color:#6F7F91;
 }
 
 /* COLORS */
@@ -414,9 +432,13 @@
 
 .project-overview{
     margin-top:30px;
+
     background:#ffffff;
-    border:1px solid #242430;
+
+    border:1px solid #DDEBE5;
+
     border-radius:18px;
+
     padding:20px;
 }
 
@@ -431,12 +453,12 @@
 .overview-header h2{
     font-family:"Playfair Display",serif;
     font-size:20px;
-color:#F2F2ED;
+    color:#161615;
     margin-bottom:10px;
 }
 
 .overview-header p{
-    color:#9AA3B1;
+    color:#536273;
     line-height:1.7;
     max-width:720px;
 }

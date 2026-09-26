@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+
 import {
   Clock3,
   Database,
@@ -17,13 +17,19 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+import HistoryDrawer from "../components/common/HistoryDrawer";
+import useHistory from "../hooks/useHistory";
+
+
 function RetrievalViewerPage() {
+
   const [query, setQuery] = useState(
     "What is artificial intelligence and how does it work?"
   );
 
   const [topK, setTopK] = useState(5);
   const [loading, setLoading] = useState(false);
+
 
   const [retrievedChunks, setRetrievedChunks] = useState([
     {
@@ -68,32 +74,115 @@ function RetrievalViewerPage() {
     },
   ]);
 
+
+  /* =========================================================
+     HISTORY
+  ========================================================= */
+
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+  const {
+    history,
+    saveHistory,
+    clearHistory,
+  } = useHistory("rag_history_retrieval");
+
+
+  /* =========================================================
+     RETRIEVE
+  ========================================================= */
+
   const handleRetrieve = () => {
-    if (!query.trim() || loading) return;
+
+    if (!query.trim() || loading) {
+      return;
+    }
 
     setLoading(true);
 
     setTimeout(() => {
+
       setLoading(false);
+
+
+      /* ================================================
+         SAVE SUCCESSFUL RETRIEVAL TO HISTORY
+      ================================================= */
+
+      saveHistory({
+        title: query.trim(),
+        query: query.trim(),
+        topK,
+        chunks: retrievedChunks,
+      });
+
     }, 500);
   };
 
+
+  /* =========================================================
+     CLEAR
+  ========================================================= */
+
   const handleClear = () => {
-    if (loading) return;
+
+    if (loading) {
+      return;
+    }
 
     setQuery("");
   };
 
+
+  /* =========================================================
+     HISTORY SELECTION
+  ========================================================= */
+
+  const handleHistorySelect = (item) => {
+
+    if (!item) {
+      return;
+    }
+
+    setQuery(item.query || item.title || "");
+
+    if (item.topK) {
+      setTopK(item.topK);
+    }
+
+    if (
+      Array.isArray(item.chunks) &&
+      item.chunks.length > 0
+    ) {
+      setRetrievedChunks(item.chunks);
+    }
+
+    setHistoryOpen(false);
+  };
+
+
+  /* =========================================================
+     ANALYTICS
+  ========================================================= */
+
   const averageScore =
-    retrievedChunks.reduce((sum, chunk) => sum + chunk.score, 0) /
-    retrievedChunks.length;
+    retrievedChunks.reduce(
+      (sum, chunk) => sum + chunk.score,
+      0
+    ) / retrievedChunks.length;
+
 
   const uniqueSources = new Set(
-    retrievedChunks.map((chunk) => chunk.source)
+    retrievedChunks.map(
+      (chunk) => chunk.source
+    )
   ).size;
 
+
   return (
+
     <div className="retrieval-page">
+
 
       {/* =====================================================
           PAGE HEADER
@@ -108,26 +197,62 @@ function RetrievalViewerPage() {
           </div>
 
           <div>
-            <h1>Retrieval Viewer</h1>
+
+            <h1>
+              Retrieval Viewer
+            </h1>
 
             <p>
               Inspect retrieved chunks, relevance scores, and sources for any
               query.
             </p>
+
           </div>
 
         </div>
 
+
         <div className="retrieval-header-actions">
 
-          <button className="retrieval-history-button">
+
+          {/* =================================================
+              VIEW HISTORY
+          ================================================= */}
+
+          <button
+            type="button"
+            className="retrieval-history-button"
+            onClick={() =>
+              setHistoryOpen(true)
+            }
+          >
+
             <History size={17} />
-            <span>View History</span>
+
+            <span>
+              View History
+            </span>
+
+
+            {history.length > 0 && (
+
+              <span className="retrieval-history-count">
+                {history.length}
+              </span>
+
+            )}
+
           </button>
 
+
           <div className="retrieval-ready-badge">
+
             <CheckCircle2 size={16} />
-            <span>Ready</span>
+
+            <span>
+              Ready
+            </span>
+
           </div>
 
         </div>
@@ -143,18 +268,25 @@ function RetrievalViewerPage() {
 
         <div className="retrieval-query-main">
 
-          <label>Query</label>
+          <label>
+            Query
+          </label>
+
 
           <div className="retrieval-query-input-wrapper">
 
             <input
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) =>
+                setQuery(e.target.value)
+              }
               onKeyDown={(e) => {
+
                 if (e.key === "Enter") {
                   handleRetrieve();
                 }
+
               }}
               placeholder="Enter your query..."
               disabled={loading}
@@ -163,6 +295,7 @@ function RetrievalViewerPage() {
             <Send size={19} />
 
           </div>
+
 
           <p>
             Enter your query to view retrieved relevant chunks from the
@@ -176,15 +309,32 @@ function RetrievalViewerPage() {
 
           <div className="retrieval-top-k">
 
-            <label>Top K Chunks</label>
+            <label>
+              Top K Chunks
+            </label>
+
 
             <select
               value={topK}
-              onChange={(e) => setTopK(Number(e.target.value))}
+              onChange={(e) =>
+                setTopK(
+                  Number(e.target.value)
+                )
+              }
             >
-              <option value={3}>3</option>
-              <option value={5}>5</option>
-              <option value={10}>10</option>
+
+              <option value={3}>
+                3
+              </option>
+
+              <option value={5}>
+                5
+              </option>
+
+              <option value={10}>
+                10
+              </option>
+
             </select>
 
           </div>
@@ -193,13 +343,20 @@ function RetrievalViewerPage() {
           <button
             className="retrieval-button retrieval-button-primary"
             onClick={handleRetrieve}
-            disabled={loading}
+            disabled={
+              loading ||
+              !query.trim()
+            }
           >
+
             <Sparkles size={17} />
 
             <span>
-              {loading ? "Retrieving..." : "Retrieve"}
+              {loading
+                ? "Retrieving..."
+                : "Retrieve"}
             </span>
+
           </button>
 
 
@@ -208,8 +365,13 @@ function RetrievalViewerPage() {
             onClick={handleClear}
             disabled={loading}
           >
+
             <RotateCcw size={17} />
-            <span>Clear</span>
+
+            <span>
+              Clear
+            </span>
+
           </button>
 
         </div>
@@ -223,67 +385,116 @@ function RetrievalViewerPage() {
 
       <section className="retrieval-summary-card">
 
-        <h2>Retrieval Summary</h2>
+        <h2>
+          Retrieval Summary
+        </h2>
+
 
         <div className="retrieval-summary-grid">
 
+
           <div className="retrieval-summary-item">
+
             <div className="retrieval-summary-icon green">
               <Layers size={19} />
             </div>
 
             <div>
-              <strong>{retrievedChunks.length}</strong>
-              <span>Chunks Retrieved</span>
+
+              <strong>
+                {retrievedChunks.length}
+              </strong>
+
+              <span>
+                Chunks Retrieved
+              </span>
+
             </div>
+
           </div>
 
 
           <div className="retrieval-summary-item">
+
             <div className="retrieval-summary-icon blue">
               <Network size={19} />
             </div>
 
             <div>
-              <strong>{retrievedChunks[0]?.score.toFixed(2)}</strong>
-              <span>Top Score</span>
+
+              <strong>
+                {retrievedChunks[0]?.score.toFixed(2)}
+              </strong>
+
+              <span>
+                Top Score
+              </span>
+
             </div>
+
           </div>
 
 
           <div className="retrieval-summary-item">
+
             <div className="retrieval-summary-icon purple">
               <Clock3 size={19} />
             </div>
 
             <div>
-              <strong>{averageScore.toFixed(2)}</strong>
-              <span>Avg. Score</span>
+
+              <strong>
+                {averageScore.toFixed(2)}
+              </strong>
+
+              <span>
+                Avg. Score
+              </span>
+
             </div>
+
           </div>
 
 
           <div className="retrieval-summary-item">
+
             <div className="retrieval-summary-icon pink">
               <FileText size={19} />
             </div>
 
             <div>
-              <strong>{uniqueSources}</strong>
-              <span>Sources</span>
+
+              <strong>
+                {uniqueSources}
+              </strong>
+
+              <span>
+                Sources
+              </span>
+
             </div>
+
           </div>
 
 
           <div className="retrieval-summary-item">
+
             <div className="retrieval-summary-icon green">
               <Database size={19} />
             </div>
 
             <div>
-              <strong>1,248</strong>
-              <span>Total Chunks in Index</span>
+
+              <strong>
+                1,248
+              </strong>
+
+              <span>
+                Total Chunks in Index
+              </span>
+
             </div>
+
           </div>
 
         </div>
@@ -306,7 +517,9 @@ function RetrievalViewerPage() {
 
           <div className="retrieval-section-header">
 
-            <h2>Retrieved Chunks</h2>
+            <h2>
+              Retrieved Chunks
+            </h2>
 
           </div>
 
@@ -315,10 +528,21 @@ function RetrievalViewerPage() {
 
             <div className="retrieved-table-header">
 
-              <span>Rank</span>
-              <span>Score</span>
-              <span>Chunk Preview</span>
-              <span>Source</span>
+              <span>
+                Rank
+              </span>
+
+              <span>
+                Score
+              </span>
+
+              <span>
+                Chunk Preview
+              </span>
+
+              <span>
+                Source
+              </span>
 
             </div>
 
@@ -332,17 +556,23 @@ function RetrievalViewerPage() {
 
                 <div className="chunk-rank">
 
-                  <span>{chunk.rank}</span>
+                  <span>
+                    {chunk.rank}
+                  </span>
 
                 </div>
 
 
                 <div
                   className={`chunk-score ${
-                    chunk.score >= 0.7 ? "high" : "normal"
+                    chunk.score >= 0.7
+                      ? "high"
+                      : "normal"
                   }`}
                 >
+
                   {chunk.score.toFixed(2)}
+
                 </div>
 
 
@@ -356,11 +586,18 @@ function RetrievalViewerPage() {
                 <div className="chunk-source">
 
                   <div>
+
                     <FileText size={15} />
-                    <span>{chunk.source}</span>
+
+                    <span>
+                      {chunk.source}
+                    </span>
+
                   </div>
 
-                  <small>{chunk.location}</small>
+                  <small>
+                    {chunk.location}
+                  </small>
 
                 </div>
 
@@ -372,8 +609,13 @@ function RetrievalViewerPage() {
 
 
           <button className="retrieval-view-button">
+
             <FileText size={16} />
-            <span>View All Retrieved Chunks</span>
+
+            <span>
+              View All Retrieved Chunks
+            </span>
+
           </button>
 
         </section>
@@ -394,10 +636,14 @@ function RetrievalViewerPage() {
 
             <div className="retrieval-section-header">
 
-              <h2>Score Distribution</h2>
+              <h2>
+                Score Distribution
+              </h2>
 
               <button className="chart-action-button">
+
                 <BarChart3 size={17} />
+
               </button>
 
             </div>
@@ -416,6 +662,7 @@ function RetrievalViewerPage() {
                     {chunk.score.toFixed(2)}
                   </span>
 
+
                   <div className="score-bar-wrapper">
 
                     <div
@@ -426,6 +673,7 @@ function RetrievalViewerPage() {
                     />
 
                   </div>
+
 
                   <span className="score-rank">
                     {chunk.rank}
@@ -441,7 +689,10 @@ function RetrievalViewerPage() {
             <div className="score-chart-legend">
 
               <span className="legend-dot" />
-              <span>Relevance Score</span>
+
+              <span>
+                Relevance Score
+              </span>
 
             </div>
 
@@ -456,7 +707,9 @@ function RetrievalViewerPage() {
 
             <div className="retrieval-section-header">
 
-              <h2>Source Breakdown</h2>
+              <h2>
+                Source Breakdown
+              </h2>
 
             </div>
 
@@ -466,8 +719,15 @@ function RetrievalViewerPage() {
               <div className="source-donut">
 
                 <div className="source-donut-inner">
-                  <span>5</span>
-                  <small>chunks</small>
+
+                  <span>
+                    5
+                  </span>
+
+                  <small>
+                    chunks
+                  </small>
+
                 </div>
 
               </div>
@@ -476,9 +736,17 @@ function RetrievalViewerPage() {
               <div className="source-breakdown-table">
 
                 <div className="source-table-header">
+
                   <span></span>
-                  <span>Chunks</span>
-                  <span>Percentage</span>
+
+                  <span>
+                    Chunks
+                  </span>
+
+                  <span>
+                    Percentage
+                  </span>
+
                 </div>
 
 
@@ -488,13 +756,19 @@ function RetrievalViewerPage() {
 
                     <span className="source-dot" />
 
-                    <span>wiki_015.txt</span>
+                    <span>
+                      wiki_015.txt
+                    </span>
 
                   </div>
 
-                  <span>5</span>
+                  <span>
+                    5
+                  </span>
 
-                  <span>100%</span>
+                  <span>
+                    100%
+                  </span>
 
                 </div>
 
@@ -504,8 +778,13 @@ function RetrievalViewerPage() {
 
 
             <button className="retrieval-view-button">
+
               <FileText size={16} />
-              <span>View All Sources</span>
+
+              <span>
+                View All Sources
+              </span>
+
             </button>
 
           </section>
@@ -524,15 +803,39 @@ function RetrievalViewerPage() {
         <Lightbulb size={18} />
 
         <span>
-          <strong>Tip:</strong> Higher scores indicate greater relevance to
+
+          <strong>
+            Tip:
+          </strong>{" "}
+
+          Higher scores indicate greater relevance to
           your query. Click on any chunk to view more details or the full
           context.
+
         </span>
 
       </div>
 
+
+      {/* =====================================================
+          HISTORY DRAWER
+      ===================================================== */}
+
+      <HistoryDrawer
+        open={historyOpen}
+        onClose={() =>
+          setHistoryOpen(false)
+        }
+        title="Retrieval History"
+        subtitle="Your previous retrieval queries"
+        items={history}
+        onSelect={handleHistorySelect}
+        onClear={clearHistory}
+      />
+
     </div>
   );
 }
+
 
 export default RetrievalViewerPage;

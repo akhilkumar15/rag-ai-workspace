@@ -21,28 +21,40 @@ function RetrievalPanel({
       ? sampleChunk
       : context[0];
 
+  const similarity = Number(chunk?.similarity ?? 0);
+
   return (
     <aside className="retrieval-panel">
 
-      {/* Header */}
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
       <div className="retrieval-panel-header">
 
-        <h2>
-          Retrieved Context
-        </h2>
+        <div>
+          <h2>Retrieved Context</h2>
+
+          <span className="retrieval-panel-subtitle">
+            Semantic context used for prediction
+          </span>
+        </div>
 
         <div className="retrieval-panel-navigation">
 
-          <button type="button">
+          <button
+            type="button"
+            aria-label="Previous retrieved chunk"
+          >
             <ChevronLeft size={16} />
           </button>
 
-          <span>
-            1 of 5
-          </span>
+          <span>1 of 5</span>
 
-          <button type="button">
+          <button
+            type="button"
+            aria-label="Next retrieved chunk"
+          >
             <ChevronRight size={16} />
           </button>
 
@@ -50,23 +62,37 @@ function RetrievalPanel({
 
       </div>
 
-      {/* Source */}
+
+      {/* =====================================================
+          RETRIEVED CONTEXT
+      ===================================================== */}
 
       <div className="retrieval-source">
 
-        <h3>
-          {chunk.title}
-        </h3>
+        <div className="retrieval-source-heading">
+
+          <FileText size={16} />
+
+          <h3>
+            {chunk?.title ?? "Retrieved document"}
+          </h3>
+
+        </div>
 
         <p>
-          {chunk.content}
+          {chunk?.content ?? "No retrieved context available."}
         </p>
 
       </div>
 
-      {/* Metrics */}
+
+      {/* =====================================================
+          RETRIEVAL METRICS
+      ===================================================== */}
 
       <div className="retrieval-metrics">
+
+        {/* Similarity */}
 
         <div className="retrieval-metric">
 
@@ -77,13 +103,19 @@ function RetrievalPanel({
           <div className="retrieval-score-row">
 
             <strong>
-              {chunk.similarity.toFixed(2)}
+              {similarity.toFixed(2)}
             </strong>
 
-            <div className="retrieval-progress">
+            <div
+              className="retrieval-progress"
+              aria-label={`Similarity score ${similarity}`}
+            >
               <div
                 style={{
-                  width: `${chunk.similarity * 100}%`,
+                  width: `${Math.max(
+                    0,
+                    Math.min(similarity * 100, 100)
+                  )}%`,
                 }}
               />
             </div>
@@ -91,6 +123,9 @@ function RetrievalPanel({
           </div>
 
         </div>
+
+
+        {/* Source */}
 
         <div className="retrieval-metric">
 
@@ -103,7 +138,7 @@ function RetrievalPanel({
             <FileText size={16} />
 
             <span>
-              {chunk.source}
+              {chunk?.source ?? "Unknown source"}
             </span>
 
           </div>
@@ -112,7 +147,10 @@ function RetrievalPanel({
 
       </div>
 
-      {/* View all */}
+
+      {/* =====================================================
+          VIEW ALL
+      ===================================================== */}
 
       <button
         type="button"

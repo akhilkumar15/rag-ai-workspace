@@ -43,11 +43,7 @@ const workspace = [
     path: "/retrieval-viewer",
     icon: Search,
   },
-  {
-    name: "Upload Documents",
-    path: "/upload-documents",
-    icon: FileText,
-  },
+
 ];
 
 

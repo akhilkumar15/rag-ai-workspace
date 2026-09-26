@@ -1,29 +1,24 @@
-import {
-  Brain,
-  Clock3,
-  Database,
-  Target,
-  Layers3,
-  BarChart3,
-} from "lucide-react";
-
 function MetricCard({ title, value, confidence = false }) {
   return (
-    <div className="min-w-0 px-3 py-3">
+    <div className="analytics-item">
 
-      <p className="text-xs uppercase tracking-wide text-[#9a9a96]">
-        {title}
-      </p>
+      <div className="analytics-item-content">
 
-      <h3
-        className={`mt-1 truncate text-base font-semibold ${
-          confidence
-            ? "text-[#0F6E56]"
-            : "text-[#161615]"
-        }`}
-      >
-        {value}
-      </h3>
+        <span className="analytics-item-label">
+          {title}
+        </span>
+
+        <strong
+          className={
+            confidence
+              ? "analytics-item-value analytics-item-value-highlight"
+              : "analytics-item-value"
+          }
+        >
+          {value}
+        </strong>
+
+      </div>
 
     </div>
   );
@@ -34,56 +29,67 @@ function AnalyticsPanel({
   useSampleData = false,
 }) {
   const sampleAnalytics = {
-    embeddingModel: "all-MiniLM-L6-v2",
+    embeddingModel: "MiniLM-L6-v2",
     retrievalTime: "42 ms",
     predictionMethod: "RAG + Regex",
     topKChunks: "5",
     confidence: "91%",
-    totalCandidates: "18",
+    totalCandidates: "32",
   };
 
   const data = useSampleData
     ? sampleAnalytics
     : {
         embeddingModel:
-          analytics.embeddingModel ?? sampleAnalytics.embeddingModel,
+          analytics.embeddingModel ??
+          sampleAnalytics.embeddingModel,
 
         retrievalTime:
-          analytics.retrievalTime ?? sampleAnalytics.retrievalTime,
+          analytics.retrievalTime ??
+          sampleAnalytics.retrievalTime,
 
         predictionMethod:
-          analytics.predictionMethod ?? sampleAnalytics.predictionMethod,
+          analytics.predictionMethod ??
+          sampleAnalytics.predictionMethod,
 
         topKChunks:
-          analytics.topKChunks ?? sampleAnalytics.topKChunks,
+          analytics.topKChunks ??
+          sampleAnalytics.topKChunks,
 
         confidence:
-          analytics.confidence ?? sampleAnalytics.confidence,
+          analytics.confidence ??
+          sampleAnalytics.confidence,
 
         totalCandidates:
-          analytics.totalCandidates ?? sampleAnalytics.totalCandidates,
+          analytics.totalCandidates ??
+          sampleAnalytics.totalCandidates,
       };
 
   return (
-    <section className="rounded-3xl border border-[#e2e2df] bg-[#ffffff] p-6">
+    <section className="analytics-container">
 
-      {/* Header */}
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
-      <div className="flex items-center justify-between">
+      <div className="analytics-header">
 
-        <h2 className="text-2xl font-bold tracking-tight text-[#161615]">
-          Prediction Analytics
-        </h2>
+        <div>
+          <h2>Prediction Analytics</h2>
 
-        <span className="text-sm text-[#9a9a96]">
-          Live Metrics
-        </span>
+          <p>
+            Live Metrics
+          </p>
+        </div>
 
       </div>
 
-      {/* Metrics */}
 
-      <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {/* =====================================================
+          METRICS
+      ===================================================== */}
+
+      <div className="analytics-grid">
 
         <MetricCard
           title="Embedding Model"

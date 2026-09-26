@@ -4,67 +4,72 @@ function PredictionGrid({
   predictions = [],
   onSelectPrediction,
 }) {
+  const visiblePredictions = predictions.slice(0, 5);
+
   return (
     <section className="prediction-grid-section">
 
       {/* =====================================================
-          HEADER
+          SECTION HEADER
       ===================================================== */}
 
       <div className="prediction-grid-header">
-
-        <h2>
-          Predicted Next Words
-        </h2>
+        <h2>Predicted Next Words</h2>
 
         <span>
-          (Top {predictions.length})
+          (Top {visiblePredictions.length})
         </span>
-
       </div>
 
 
       {/* =====================================================
-          CARDS
+          PREDICTION CARDS
       ===================================================== */}
 
-      {predictions.length > 0 ? (
+      {visiblePredictions.length > 0 ? (
 
         <div className="prediction-cards">
 
-          {predictions.slice(0, 5).map((prediction, index) => (
+          {visiblePredictions.map((prediction, index) => {
 
-            <button
-              key={`${prediction.word}-${index}`}
-              onClick={() =>
-                onSelectPrediction?.(prediction.word)
-              }
-              className="prediction-card"
-            >
+            const rank = prediction.rank ?? index + 1;
+            const score = Number(prediction.score);
 
-              {/* Badge */}
+            return (
+              <button
+                key={`${prediction.word}-${index}`}
+                type="button"
+                className="prediction-card"
+                onClick={() =>
+                  onSelectPrediction?.(prediction.word)
+                }
+              >
 
-              <div className="prediction-card-badge">
-                {prediction.rank ?? index + 1}
-              </div>
+                {/* Rank */}
 
-
-              {/* Word */}
-
-              <div className="prediction-card-word">
-                {prediction.word}
-              </div>
+                <div className="prediction-card-badge">
+                  {rank}
+                </div>
 
 
-              {/* Score */}
+                {/* Predicted Word */}
 
-              <div className="prediction-card-score">
-                {Number(prediction.score).toFixed(2)}
-              </div>
+                <div className="prediction-card-word">
+                  {prediction.word}
+                </div>
 
-            </button>
 
-          ))}
+                {/* Confidence Score */}
+
+                <div className="prediction-card-score">
+                  {Number.isFinite(score)
+                    ? score.toFixed(2)
+                    : "0.00"}
+                </div>
+
+              </button>
+            );
+          })}
 
         </div>
 
@@ -83,9 +88,7 @@ function PredictionGrid({
 
       <div className="prediction-grid-footer">
 
-        <Lightbulb
-          size={16}
-        />
+        <Lightbulb size={16} />
 
         <span>
           Click any predicted word to append it to your input and

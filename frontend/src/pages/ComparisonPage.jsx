@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Scale,
@@ -15,7 +15,12 @@ import {
 
 import useComparison from "../hooks/useComparison";
 
+import HistoryDrawer from "../components/common/HistoryDrawer";
+import useHistory from "../hooks/useHistory";
+
+
 function ComparisonPage() {
+
   const {
     documentA,
     documentB,
@@ -34,19 +39,66 @@ function ComparisonPage() {
     clear,
   } = useComparison();
 
+
   const [documentAMode, setDocumentAMode] = useState("paste");
   const [documentBMode, setDocumentBMode] = useState("paste");
+
+
+  /* =========================================================
+     HISTORY
+  ========================================================= */
+
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+  const {
+    history,
+    saveHistory,
+    clearHistory,
+  } = useHistory("rag_history_comparison");
+
+
+  /* =========================================================
+     SAVE SUCCESSFUL COMPARISON TO HISTORY
+  ========================================================= */
+
+  useEffect(() => {
+
+    if (!result?.response) {
+      return;
+    }
+
+    const documentATitle =
+      result?.documents?.document_a?.file_name ||
+      "Document A";
+
+    const documentBTitle =
+      result?.documents?.document_b?.file_name ||
+      "Document B";
+
+    saveHistory({
+      title: `${documentATitle} vs ${documentBTitle}`,
+      query: `${documentATitle} vs ${documentBTitle}`,
+      documentA: documentATitle,
+      documentB: documentBTitle,
+      response: result.response,
+      result,
+    });
+
+  }, [result, saveHistory]);
+
 
   /* =========================================================
      FILE VALIDATION
   ========================================================= */
 
   const handleFileSelect = (event, documentType) => {
+
     const file = event.target.files?.[0];
 
     if (!file) {
       return;
     }
+
 
     const allowedTypes = [
       "application/pdf",
@@ -54,53 +106,84 @@ function ComparisonPage() {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
 
-    const allowedExtensions = [".pdf", ".txt", ".docx"];
+
+    const allowedExtensions = [
+      ".pdf",
+      ".txt",
+      ".docx",
+    ];
+
 
     const extension = file.name
       .slice(file.name.lastIndexOf("."))
       .toLowerCase();
 
+
     if (
       !allowedTypes.includes(file.type) &&
       !allowedExtensions.includes(extension)
     ) {
-      alert("Please upload a PDF, TXT, or DOCX file.");
+
+      alert(
+        "Please upload a PDF, TXT, or DOCX file."
+      );
+
       event.target.value = "";
+
       return;
     }
+
 
     if (file.size > 50 * 1024 * 1024) {
-      alert("Maximum file size is 50MB.");
+
+      alert(
+        "Maximum file size is 50MB."
+      );
+
       event.target.value = "";
+
       return;
     }
 
+
     if (documentType === "A") {
+
       setDocumentAFile(file);
       setDocumentAMode("upload");
+
     } else {
+
       setDocumentBFile(file);
       setDocumentBMode("upload");
+
     }
   };
+
 
   /* =========================================================
      REMOVE FILE
   ========================================================= */
 
   const removeFile = (documentType) => {
+
     if (documentType === "A") {
+
       setDocumentAFile(null);
+
     } else {
+
       setDocumentBFile(null);
+
     }
   };
+
 
   /* =========================================================
      CLEAR EVERYTHING
   ========================================================= */
 
   const handleClear = () => {
+
     clear();
 
     setDocumentAFile(null);
@@ -109,6 +192,7 @@ function ComparisonPage() {
     setDocumentAMode("paste");
     setDocumentBMode("paste");
   };
+
 
   /* =========================================================
      VALIDATION
@@ -119,18 +203,23 @@ function ComparisonPage() {
       ? Boolean(documentAFile)
       : Boolean(documentA.trim());
 
+
   const documentBReady =
     documentBMode === "upload"
       ? Boolean(documentBFile)
       : Boolean(documentB.trim());
+
 
   const canCompare =
     documentAReady &&
     documentBReady &&
     !loading;
 
+
   return (
+
     <div className="comparison-page">
+
 
       {/* =====================================================
           PAGE HEADER
@@ -144,29 +233,57 @@ function ComparisonPage() {
             <Scale size={30} />
           </div>
 
+
           <div>
-            <h1>Comparison</h1>
+
+            <h1>
+              Comparison
+            </h1>
 
             <p>
               Compare two documents and analyze similarities and differences.
             </p>
+
           </div>
 
         </div>
 
+
         <div className="comparison-header-actions">
+
+
+          {/* View History */}
 
           <button
             type="button"
             className="comparison-history-button"
+            onClick={() => setHistoryOpen(true)}
           >
+
             <History size={17} />
-            View History
+
+            <span>
+              View History
+            </span>
+
+
+            {history.length > 0 && (
+
+              <span className="comparison-history-count">
+                {history.length}
+              </span>
+
+            )}
+
           </button>
 
+
           <div className="comparison-ready">
+
             <CheckCircle2 size={16} />
+
             Ready
+
           </div>
 
         </div>
@@ -180,15 +297,20 @@ function ComparisonPage() {
 
       <section className="comparison-selection-card">
 
-        <h2>Select Documents to Compare</h2>
+        <h2>
+          Select Documents to Compare
+        </h2>
+
 
         <div className="comparison-selection-row">
+
 
           {/* =================================================
               DOCUMENT A
           ================================================= */}
 
           <div className="comparison-document-input">
+
 
             <div className="comparison-document-label">
 
@@ -198,7 +320,9 @@ function ComparisonPage() {
                   <FileText size={20} />
                 </div>
 
-                <strong>Document A</strong>
+                <strong>
+                  Document A
+                </strong>
 
               </div>
 
@@ -212,23 +336,38 @@ function ComparisonPage() {
               <button
                 type="button"
                 className={`comparison-mode-button ${
-                  documentAMode === "upload" ? "active" : ""
+                  documentAMode === "upload"
+                    ? "active"
+                    : ""
                 }`}
-                onClick={() => setDocumentAMode("upload")}
+                onClick={() =>
+                  setDocumentAMode("upload")
+                }
               >
+
                 <UploadCloud size={15} />
+
                 Upload
+
               </button>
+
 
               <button
                 type="button"
                 className={`comparison-mode-button ${
-                  documentAMode === "paste" ? "active" : ""
+                  documentAMode === "paste"
+                    ? "active"
+                    : ""
                 }`}
-                onClick={() => setDocumentAMode("paste")}
+                onClick={() =>
+                  setDocumentAMode("paste")
+                }
               >
+
                 <Pencil size={15} />
+
                 Edit
+
               </button>
 
             </div>
@@ -250,11 +389,15 @@ function ComparisonPage() {
                   PDF, TXT or DOCX • Max 50MB
                 </span>
 
+
                 <input
                   type="file"
                   accept=".pdf,.txt,.docx,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   onChange={(event) =>
-                    handleFileSelect(event, "A")
+                    handleFileSelect(
+                      event,
+                      "A"
+                    )
                   }
                   hidden
                 />
@@ -266,38 +409,48 @@ function ComparisonPage() {
 
             {/* SELECTED FILE */}
 
-            {documentAMode === "upload" && documentAFile && (
+            {documentAMode === "upload" &&
+              documentAFile && (
 
-              <div className="comparison-selected-file">
+                <div className="comparison-selected-file">
 
-                <div className="comparison-selected-file-icon">
-                  <FileCheck2 size={18} />
+                  <div className="comparison-selected-file-icon">
+
+                    <FileCheck2 size={18} />
+
+                  </div>
+
+
+                  <div className="comparison-selected-file-info">
+
+                    <strong>
+                      {documentAFile.name}
+                    </strong>
+
+                    <span>
+                      PDF / TXT / DOCX •{" "}
+                      {(documentAFile.size / 1024).toFixed(1)}
+                      KB
+                    </span>
+
+                  </div>
+
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      removeFile("A")
+                    }
+                    aria-label="Remove Document A"
+                  >
+
+                    <X size={17} />
+
+                  </button>
+
                 </div>
 
-                <div className="comparison-selected-file-info">
-
-                  <strong>
-                    {documentAFile.name}
-                  </strong>
-
-                  <span>
-                    PDF / TXT / DOCX •{" "}
-                    {(documentAFile.size / 1024).toFixed(1)} KB
-                  </span>
-
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => removeFile("A")}
-                  aria-label="Remove Document A"
-                >
-                  <X size={17} />
-                </button>
-
-              </div>
-
-            )}
+              )}
 
 
             {/* PASTE */}
@@ -308,7 +461,9 @@ function ComparisonPage() {
                 className="comparison-content-textarea"
                 value={documentA}
                 onChange={(event) =>
-                  setDocumentA(event.target.value)
+                  setDocumentA(
+                    event.target.value
+                  )
                 }
                 placeholder="Enter or paste document A content..."
                 rows={6}
@@ -334,6 +489,7 @@ function ComparisonPage() {
 
           <div className="comparison-document-input">
 
+
             <div className="comparison-document-label">
 
               <div className="comparison-document-title">
@@ -342,7 +498,9 @@ function ComparisonPage() {
                   <FileText size={20} />
                 </div>
 
-                <strong>Document B</strong>
+                <strong>
+                  Document B
+                </strong>
 
               </div>
 
@@ -356,23 +514,38 @@ function ComparisonPage() {
               <button
                 type="button"
                 className={`comparison-mode-button ${
-                  documentBMode === "upload" ? "active" : ""
+                  documentBMode === "upload"
+                    ? "active"
+                    : ""
                 }`}
-                onClick={() => setDocumentBMode("upload")}
+                onClick={() =>
+                  setDocumentBMode("upload")
+                }
               >
+
                 <UploadCloud size={15} />
+
                 Upload
+
               </button>
+
 
               <button
                 type="button"
                 className={`comparison-mode-button ${
-                  documentBMode === "paste" ? "active" : ""
+                  documentBMode === "paste"
+                    ? "active"
+                    : ""
                 }`}
-                onClick={() => setDocumentBMode("paste")}
+                onClick={() =>
+                  setDocumentBMode("paste")
+                }
               >
+
                 <Pencil size={15} />
+
                 Edit
+
               </button>
 
             </div>
@@ -394,11 +567,15 @@ function ComparisonPage() {
                   PDF, TXT or DOCX • Max 50MB
                 </span>
 
+
                 <input
                   type="file"
                   accept=".pdf,.txt,.docx,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   onChange={(event) =>
-                    handleFileSelect(event, "B")
+                    handleFileSelect(
+                      event,
+                      "B"
+                    )
                   }
                   hidden
                 />
@@ -410,38 +587,48 @@ function ComparisonPage() {
 
             {/* SELECTED FILE */}
 
-            {documentBMode === "upload" && documentBFile && (
+            {documentBMode === "upload" &&
+              documentBFile && (
 
-              <div className="comparison-selected-file">
+                <div className="comparison-selected-file">
 
-                <div className="comparison-selected-file-icon">
-                  <FileCheck2 size={18} />
+                  <div className="comparison-selected-file-icon">
+
+                    <FileCheck2 size={18} />
+
+                  </div>
+
+
+                  <div className="comparison-selected-file-info">
+
+                    <strong>
+                      {documentBFile.name}
+                    </strong>
+
+                    <span>
+                      PDF / TXT / DOCX •{" "}
+                      {(documentBFile.size / 1024).toFixed(1)}
+                      KB
+                    </span>
+
+                  </div>
+
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      removeFile("B")
+                    }
+                    aria-label="Remove Document B"
+                  >
+
+                    <X size={17} />
+
+                  </button>
+
                 </div>
 
-                <div className="comparison-selected-file-info">
-
-                  <strong>
-                    {documentBFile.name}
-                  </strong>
-
-                  <span>
-                    PDF / TXT / DOCX •{" "}
-                    {(documentBFile.size / 1024).toFixed(1)} KB
-                  </span>
-
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => removeFile("B")}
-                  aria-label="Remove Document B"
-                >
-                  <X size={17} />
-                </button>
-
-              </div>
-
-            )}
+              )}
 
 
             {/* PASTE */}
@@ -452,7 +639,9 @@ function ComparisonPage() {
                 className="comparison-content-textarea"
                 value={documentB}
                 onChange={(event) =>
-                  setDocumentB(event.target.value)
+                  setDocumentB(
+                    event.target.value
+                  )
                 }
                 placeholder="Enter or paste document B content..."
                 rows={6}
@@ -518,7 +707,9 @@ function ComparisonPage() {
 
             <AlertCircle size={16} />
 
-            <span>{error}</span>
+            <span>
+              {error}
+            </span>
 
           </div>
 
@@ -536,6 +727,7 @@ function ComparisonPage() {
 
         <section className="comparison-result-card">
 
+
           <div className="comparison-result-header">
 
             <div>
@@ -550,9 +742,13 @@ function ComparisonPage() {
 
             </div>
 
+
             <div className="comparison-result-status">
+
               <CheckCircle2 size={16} />
+
               Completed
+
             </div>
 
           </div>
@@ -564,18 +760,25 @@ function ComparisonPage() {
 
             <div className="comparison-result-documents">
 
+
               <div className="comparison-result-document">
 
-                <span>Document A</span>
+                <span>
+                  Document A
+                </span>
 
                 <strong>
                   {result.documents.document_a?.file_name ||
                     "Text Input"}
                 </strong>
 
+
                 {result.documents.document_a?.file_type && (
+
                   <small>
+
                     {result.documents.document_a.file_type}
+
                     {result.documents.document_a.total_pages
                       ? ` • ${result.documents.document_a.total_pages} page${
                           result.documents.document_a.total_pages > 1
@@ -583,7 +786,9 @@ function ComparisonPage() {
                             : ""
                         }`
                       : ""}
+
                   </small>
+
                 )}
 
               </div>
@@ -596,16 +801,22 @@ function ComparisonPage() {
 
               <div className="comparison-result-document">
 
-                <span>Document B</span>
+                <span>
+                  Document B
+                </span>
 
                 <strong>
                   {result.documents.document_b?.file_name ||
                     "Text Input"}
                 </strong>
 
+
                 {result.documents.document_b?.file_type && (
+
                   <small>
+
                     {result.documents.document_b.file_type}
+
                     {result.documents.document_b.total_pages
                       ? ` • ${result.documents.document_b.total_pages} page${
                           result.documents.document_b.total_pages > 1
@@ -613,7 +824,9 @@ function ComparisonPage() {
                             : ""
                         }`
                       : ""}
+
                   </small>
+
                 )}
 
               </div>
@@ -627,11 +840,14 @@ function ComparisonPage() {
 
           <div className="comparison-result-content">
 
-            <h3>AI Comparison</h3>
+            <h3>
+              AI Comparison
+            </h3>
 
             <div className="comparison-result-text">
 
-              {result.response || "No comparison result returned."}
+              {result.response ||
+                "No comparison result returned."}
 
             </div>
 
@@ -641,8 +857,35 @@ function ComparisonPage() {
 
       )}
 
+
+      {/* =====================================================
+          HISTORY DRAWER
+      ===================================================== */}
+
+      <HistoryDrawer
+        open={historyOpen}
+        onClose={() =>
+          setHistoryOpen(false)
+        }
+        title="Comparison History"
+        subtitle="Your previous document comparisons"
+        items={history}
+        onSelect={(item) => {
+
+          setHistoryOpen(false);
+
+          console.log(
+            "Selected comparison history:",
+            item
+          );
+
+        }}
+        onClear={clearHistory}
+      />
+
     </div>
   );
 }
+
 
 export default ComparisonPage;
