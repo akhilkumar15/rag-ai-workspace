@@ -1,26 +1,45 @@
 # RAG AI Workspace
 
-## Features
-- Document Ingestion
-- Text Preprocessing
-- Chunking
-- Embeddings
-- FAISS Retrieval
+A full-stack AI workspace built around Retrieval-Augmented Generation (RAG), semantic retrieval, document intelligence, and word prediction.
+
+The project combines a React + Vite frontend with a FastAPI backend, FAISS vector retrieval, and Sentence Transformers to provide multiple AI-powered tools in a single workspace.
+
+---
+
+## Overview
+
+RAG AI Workspace is designed as a modular AI platform where users can interact with documents and retrieved knowledge through different AI workflows.
+
+The current workspace includes:
+
 - Word Prediction
 - Question Answering
-- Summarization
-- Ollama Integration
+- Document Summarization
+- Document Comparison
+- Retrieval Viewer
+- Retrieval History
+- Document Upload
+- FAISS-based Retrieval
 
-## Tech Stack
-- Python
-- FAISS
-- Sentence Transformers
-- Ollama
-- FastAPI (Upcoming)
-- React (Upcoming)
+---
 
-## Run
+## Features
 
-python build_index.py
+### Word Prediction
 
-python main.py
+Predicts the next possible word from the user's input using retrieved context.
+
+The system focuses on **true next-word prediction** rather than generating complete sentences.
+
+Example:
+
+```text
+Input:
+Akhil is
+
+Predictions:
+a
+the
+very
+not
+working
