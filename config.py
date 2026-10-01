@@ -5,6 +5,12 @@ Central configuration for the RAG AI Workspace.
 from pathlib import Path
 import logging
 
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # =============================================================================
 # Project Information
 # =============================================================================
@@ -54,15 +60,16 @@ EMBEDDING_MODEL_NAME: str = "sentence-transformers/all-MiniLM-L6-v2"
 # LLM Configuration
 # ==========================
 
-LLM_PROVIDER = "ollama"
-
 # Options:
 # "llama3"
 # "llama3.2:3b"
 
-LLM_MODEL_NAME = "llama3"
-
-OLLAMA_HOST = "http://localhost:11434"
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama")
+LLM_MODEL_NAME = os.getenv("LLM_MODEL_NAME", "llama3")
+OLLAMA_HOST = os.getenv(
+    "OLLAMA_HOST",
+    "http://localhost:11434",
+)
 
 
 # =============================================================================
